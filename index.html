@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestell Academy - Smart Autonomous Metro Mentorship</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Orbitron:wght@700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        gestell: {
+                            navy: '#041124',     /* Deep Navy matching Logo4 */
+                            space: '#020914',    /* Obsidian dark */
+                            card: '#08162b',     /* Terminal Card Navy */
+                            neon: '#B6FF00',     /* Brand Neon */
+                            neonDim: 'rgba(182, 255, 0, 0.15)',
+                            text: '#f8fafc',
+                            muted: '#64748b'
+                        }
+                    },
+                    fontFamily: {
+                        orbitron: ['Orbitron', 'sans-serif'],
+                        space: ['Space Grotesk', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        body {
+            background-color: #0f172a;
+            font-family: 'Space Grotesk', sans-serif;
+            color: #f8fafc;
+            -webkit-font-smoothing: antialiased;
+        }
+        
+        /* Strict A4 Layout Constraints */
+        .a4-page {
+            width: 210mm;
+            min-height: 297mm;
+            background-color: #020914;
+            margin: 2rem auto;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.8);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            border: 1px solid rgba(182, 255, 0, 0.15);
+        }
+
+        /* Tech Blueprint Grid */
+        .tech-blueprint {
+            position: absolute;
+            inset: 0;
+            background-size: 25px 25px;
+            background-image: 
+                linear-gradient(to right, rgba(182, 255, 0, 0.04) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(182, 255, 0, 0.04) 1px, transparent 1px);
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(182, 255, 0, 0.15);
+        }
+        .neon-text-glow {
+            text-shadow: 0 0 10px rgba(182, 255, 0, 0.4);
+        }
+
+        /* Custom connection line animations to make it look active */
+        @keyframes pulse-line {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 1; }
+        }
+        .pulse-path {
+            animation: pulse-line 2s infinite;
+        }
+
+        @media print {
+            body { background: #020914; margin: 0; }
+            .a4-page { margin: 0; box-shadow: none; width: 100%; height: 100%; border: none; }
+            .no-print { display: none; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- Main Document -->
+    <div class="a4-page">
+        <div class="tech-blueprint"></div>
+        
+        <!-- Content Layer -->
+        <div class="relative z-10 flex flex-col h-full p-10 justify-between">
+            
+            <!-- HEADER MODULE -->
+            <header class="flex justify-between items-center border border-gestell-neon/20 bg-gestell-card/80 p-4 rounded-lg backdrop-blur-md">
+                <div class="flex items-center gap-6">
+                    <div class="bg-gestell-navy px-5 py-2 rounded border border-gestell-neon/30 flex items-center justify-center h-16 w-auto shadow-[0_0_15px_rgba(182,255,0,0.1)]">
+                        <img src="Black.png" alt="Gestell Logo" class="h-10 w-auto object-contain" onerror="this.onerror=null; this.parentElement.innerHTML='<div class=\'text-gestell-neon font-mono font-black text-xl tracking-wider\'>GESTELL</div>';">
+                    </div>
+                    <div>
+                        <div class="text-[10px] font-mono tracking-[0.3em] text-gestell-neon uppercase">System Engineering Guild</div>
+                        <h2 class="font-orbitron font-black text-white text-xl tracking-widest mt-1">PROJECT TRAINING 2026</h2>
+                    </div>
+                </div>
+                
+                <div class="text-right font-mono">
+                    <div class="text-[10px] text-gestell-muted uppercase tracking-widest">Availability</div>
+                    <div class="text-xs text-gestell-neon font-bold tracking-widest mt-1 bg-gestell-neon/10 px-3 py-1 rounded border border-gestell-neon/30 animate-pulse">
+                        10 SEATS ONLY
+                    </div>
+                </div>
+            </header>
+
+            <!-- HERO SUB-DASHBOARD -->
+            <div class="my-8 border-l-4 border-gestell-neon pl-6 relative">
+                <div class="absolute -left-1.5 top-0 w-2 h-2 bg-gestell-neon rounded-full shadow-[0_0_10px_#B6FF00]"></div>
+                 <div class="mt-4 flex flex-wrap gap-2 justify-between border-b border-white/5 pb-2 font-mono text-[9px] text-gestell-neon tracking-widest uppercase">
+                    <div>REAL-WORLD EXPERIENCE</div>
+                    <div>PROJECT-BASED</div>
+                    <div>HANDS-ON</div>
+                    <div>SUPERVISED</div>
+                    <div><span class="bg-gestell-neon/20 px-2 py-0.5 rounded border border-gestell-neon/30 text-white">FREE OF CHARGE</span></div>
+                </div>
+                <div class="text-gestell-neon font-mono text-xs tracking-[0.3em] uppercase mb-1">Real System. Real Engineering.</div>
+                <h1 class="font-orbitron font-black text-[2.8rem] leading-none text-white uppercase tracking-tight">
+                    SMART AUTONOMOUS <br>
+                    <span class="neon-text-glow text-gestell-neon">METRO PLATFORM</span>
+                </h1>
+                <p class="mt-4 text-slate-400 font-medium max-w-2xl text-sm leading-relaxed">
+                    This isn't a course. You'll join a real engineering team and build a production-grade distributed control system from scratch under Gestell's direct supervision. Every deliverable is real. Every decision matters. Every line of code ships.
+                    so we will Build a complete simulated transit infrastructure combining real-time embedded logic with streaming telemetry web dashboards.
+                </p>
+            </div>
+
+            <!-- INTERACTIVE ARCHITECTURE TELEMETRY (Visual center) -->
+            <div class="bg-gestell-card/40 border border-white/5 rounded-xl p-6 relative overflow-hidden mb-8">
+                <div class="absolute top-2 right-3 font-mono text-[9px] text-gestell-muted">SYSTEM_MAP_V1.1</div>
+                
+                <!-- Schematic Map -->
+                <div class="grid grid-cols-3 gap-6 items-center relative py-2">
+                    
+                    <!-- Box 1: Hardware -->
+                    <div class="border border-gestell-neon/30 bg-gestell-space p-4 rounded-lg text-center relative z-10 neon-glow">
+                        <div class="text-[10px] text-gestell-neon font-mono uppercase tracking-widest mb-1">01. Embedded Layer</div>
+                        <h4 class="text-xs font-bold text-white uppercase">Multi-ECU Simulation</h4>
+                        <p class="text-[10px] text-slate-500 mt-1">Real-Time Execution</p>
+                    </div>
+
+                    <!-- Schematic Connection Line Left to Mid -->
+                    <div class="absolute left-[30%] right-[35%] top-1/2 -translate-y-1/2 h-[2px] bg-gradient-to-r from-gestell-neon/50 to-emerald-500/50 pulse-path z-0"></div>
+
+                    <!-- Box 2: Bridge -->
+                    <div class="border border-emerald-500/30 bg-gestell-space p-4 rounded-lg text-center relative z-10">
+                        <div class="text-[10px] text-emerald-400 font-mono uppercase tracking-widest mb-1">02. Network Layer</div>
+                        <h4 class="text-xs font-bold text-white uppercase">Backend Integration</h4>
+                        <p class="text-[10px] text-slate-500 mt-1">Comm. Protocols & APIs</p>
+                    </div>
+
+                    <!-- Schematic Connection Line Mid to Right -->
+                    <div class="absolute left-[63%] right-[5%] top-1/2 -translate-y-1/2 h-[2px] bg-gradient-to-r from-emerald-500/50 to-blue-500/50 pulse-path z-0"></div>
+
+                    <!-- Box 3: Web UI -->
+                    <div class="border border-blue-500/30 bg-gestell-space p-4 rounded-lg text-center relative z-10">
+                        <div class="text-[10px] text-blue-400 font-mono uppercase tracking-widest mb-1">03. Application Layer</div>
+                        <h4 class="text-xs font-bold text-white uppercase">Live Dashboard</h4>
+                        <p class="text-[10px] text-slate-500 mt-1">Monitoring & Control</p>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- REQUIREMENTS & LOGISTICS SPLIT GRID -->
+            <div class="grid grid-cols-12 gap-8 flex-grow">
+                
+                <!-- Left: Prerequisites & Modules (8 columns) -->
+                <div class="col-span-8 flex flex-col gap-6 justify-between">
+                    
+                    <div class="grid grid-cols-2 gap-6">
+                        <!-- Embedded Track -->
+                        <div class="bg-gestell-card/80 p-5 rounded-lg border border-white/5 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-orbitron font-bold text-sm text-white uppercase tracking-wider mb-2 flex items-center gap-2">
+                                    <span class="w-1.5 h-3 bg-gestell-neon inline-block"></span>
+                                    Embedded & Hardware
+                                </h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">Implement distributed control nodes running custom safety logic and communication systems.</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-white/5">
+                                <span class="text-[9px] text-gestell-neon font-mono uppercase tracking-widest block mb-1">Target Concepts</span>
+                                <p class="text-[11px] text-slate-300 font-mono">C/C++, MCU Peripherals, Interrupts, State Machines, RTOS Basics,Comm. Protocols</p>
+                            </div>
+                        </div>
+
+                        <!-- Fullstack Track -->
+                        <div class="bg-gestell-card/80 p-5 rounded-lg border border-white/5 flex flex-col justify-between">
+                            <div>
+                                <h3 class="font-orbitron font-bold text-sm text-white uppercase tracking-wider mb-2 flex items-center gap-2">
+                                    <span class="w-1.5 h-3 bg-gestell-neon inline-block"></span>
+                                    Backend & Web UI
+                                </h3>
+                                <p class="text-xs text-slate-400 leading-relaxed">Establish telemetry bridges and model interactive interfaces representing railway tracking.</p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-white/5">
+                                <span class="text-[9px] text-gestell-neon font-mono uppercase tracking-widest block mb-1">Target Concepts</span>
+                                <p class="text-[11px] text-slate-300 font-mono">Node.js/Python,REST/WebSocket APIs, Client-Server , Dashboard Logic.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Technical Outputs & PM Grid -->
+                    <div class="bg-gestell-card/30 p-4 rounded-lg border border-gestell-neon/10">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <h4 class="font-orbitron font-bold text-[10px] text-gestell-neon uppercase tracking-widest mb-2 border-b border-white/10 pb-1">
+                                    Technical Outputs
+                                </h4>
+                                <ul class="grid grid-cols-1 gap-1 text-[9px] font-mono text-slate-300">
+                                    <li>&bull; RTOS & Real-Time Execution</li>
+                                    <li>&bull; Distributed ECU Architecture</li>
+                                    <li>&bull; Backend API & WebSockets</li>
+                                    <li>&bull; Live Monitoring Dashboard</li>
+                                    
+                                </ul>
+                            </div>
+                            <div>
+                                <h4 class="font-orbitron font-bold text-[10px] text-white uppercase tracking-widest mb-2 border-b border-white/10 pb-1">
+                                    Soft Skills & PM
+                                </h4>
+                                <ul class="grid grid-cols-1 gap-1 text-[9px] font-mono text-slate-400">
+                                    <li>&bull; System Documentation & SDLC </li>
+                                    <li>&bull; Team Collaboration & Code Review</li>
+                                    <li>&bull; Engineering Mindset</li>
+                                    <li>&bull; Project Ownership & Deadlines</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Guided Project Mentorship Statement -->
+                    <div class="bg-gestell-card/30 p-5 rounded-lg border border-gestell-neon/10 flex gap-4 items-center">
+                        <div class="bg-gestell-neon/10 p-2 rounded text-gestell-neon">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"></path></svg>
+                        </div>
+                        <p class="text-xs text-slate-300 leading-relaxed">
+                            This program is structured as a <span class="text-gestell-neon font-bold">Guided Project Mentorship</span>. Gestell Academy provides the architecture blueprint and mentorship support. You are responsible for engineering the code and writing the system.
+                        </p>
+                    </div>
+
+                </div>
+
+                <!-- Right: Logistics & Selection (4 columns) -->
+                <div class="col-span-4 flex flex-col gap-6">
+                    
+                    <!-- Logistics -->
+                    <div class="bg-gestell-card p-5 rounded-lg border border-white/5">
+                        <h3 class="font-orbitron font-bold text-white text-xs mb-4 uppercase tracking-widest border-b border-white/10 pb-2">Logistics</h3>
+                        <ul class="space-y-4 font-mono text-xs">
+                            <li>
+                                <span class="text-[9px] text-slate-500 uppercase tracking-widest block">Format</span>
+                                <span class="font-bold text-white">Online via Meet & Proteus</span>
+                            </li>
+                            <li>
+                                <span class="text-[9px] text-slate-500 uppercase tracking-widest block">Mentorship Plan</span>
+                                <span class="font-bold text-white">Project-Based Timeline</span>
+                            </li>
+                            <li>
+                                <span class="text-[9px] text-slate-500 uppercase tracking-widest block">Start Date</span>
+                                <span class="font-bold text-white text-gestell-neon">Via Acceptance Mail</span>
+                            </li>
+                            <li>
+                                <span class="text-[9px] text-slate-500 uppercase tracking-widest block">Duration</span>
+                                <span class="font-bold text-white text-gestell-neon">Until Delivery</span>
+                            </li>
+                        </ul>
+                    </div>
+
+                    <!-- Selection Sequence -->
+                    <div class="bg-gestell-card p-5 rounded-lg border border-gestell-neon/20 shadow-[0_0_15px_rgba(182,255,0,0.05)]">
+                        <h3 class="font-orbitron font-bold text-white text-xs mb-4 uppercase tracking-widest border-b border-white/10 pb-2">Pipeline</h3>
+                        <div class="space-y-4 font-mono">
+                            <div class="flex gap-3">
+                                <span class="text-gestell-neon font-bold text-xs bg-gestell-neon/10 w-5 h-5 rounded flex items-center justify-center border border-gestell-neon/20">01</span>
+                                <div>
+                                    <h5 class="text-white text-xs font-bold">Submit Form</h5>
+                                    <p class="text-[9px] text-slate-500 mt-0.5">Profile screening</p>
+                                </div>
+                            </div>
+                            <div class="flex gap-3">
+                                <span class="text-gestell-neon font-bold text-xs bg-gestell-neon/10 w-5 h-5 rounded flex items-center justify-center border border-gestell-neon/20">02</span>
+                                <div>
+                                    <h5 class="text-white text-xs font-bold">Interview</h5>
+                                    <p class="text-[9px] text-slate-500 mt-0.5">Technical screening</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- FOOTER RUNTIME -->
+            <footer class="mt-6 flex flex-col gap-4">
+                <div class="border-t border-gestell-neon/15 pt-5 flex justify-between items-center">
+                    <div class="font-mono text-left">
+                        <p class="text-white text-xs font-bold uppercase tracking-wider">READY TO BUILD SOMETHING REAL?</p>
+                        <p class="text-[9px] text-slate-500 uppercase mt-0.5">Applications reviewed on a rolling basis - don't wait</p>
+                    </div>
+                    <div class="flex items-center gap-6 font-mono text-right">
+                        <a href="https://forms.gle/1EJSAkhc66jZP7fv5" target="_blank" rel="noopener noreferrer" class="bg-gestell-neon text-black font-orbitron font-black text-xs px-6 py-3 tracking-widest hover:bg-white transition cursor-pointer shadow-[0_0_15px_#B6FF00]">
+                            APPLY NOW &rarr;
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="text-left font-mono text-[9px] text-slate-600 border-t border-white/5 pt-3 tracking-wider">
+                    info.gestell@gmail.com <br>
+                    Gestell All Rights Reserved. 2026 ©
+                </div>
+            </footer>
+            <!-- FOOTER RUNTIME -->
+            <!-- <footer class="mt-6 border-t border-gestell-neon/15 pt-5 flex justify-between items-center">
+                <div class="font-mono text-left">
+                    <p class="text-white text-xs font-bold uppercase tracking-wider">READY TO BUILD SOMETHING REAL?</p>
+                    <p class="text-[9px] text-slate-500 uppercase mt-0.5">Applications reviewed on a rolling basis - don't wait</p>
+                </div>
+                <div class="flex items-center gap-6 font-mono text-right">
+                    <a href="https://forms.gle/1EJSAkhc66jZP7fv5" target="_blank" rel="noopener noreferrer" class="bg-gestell-neon text-black font-orbitron font-black text-xs px-6 py-3 tracking-widest hover:bg-white transition cursor-pointer shadow-[0_0_15px_#B6FF00]">
+                        APPLY NOW &rarr;
+                    </a>
+                </div>
+            </footer> -->
+        </div>
+    </div>
+
+</body>
+</html>
