@@ -3,15 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Smart Autonomous Metro System - Demo</title>
+    <title>Autonomous Metro Supervisory Control System</title>
     
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     
-    <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     
     <style>
@@ -276,7 +273,6 @@
         <button class="btn" onclick="nextSlide()">Next<i class="fas fa-chevron-right ml-2"></i></button>
     </div>
 
-    <!-- Slide 1: Title -->
     <div class="slide active" id="slide-1">
         <div class="flex flex-col items-center justify-center h-full text-center">
             <div class="mb-8 relative">
@@ -284,14 +280,14 @@
                 <div class="absolute -top-4 -right-8 bg-red-600 text-white text-xs px-2 py-1 rounded font-mono font-bold border border-red-400 border-glow-red">LIVE STATUS: ACTIVE</div>
             </div>
             <h1 class="text-5xl md:text-7xl font-bold mb-4 glow-blue uppercase tracking-widest text-cyan-50">
-                Smart Autonomous<br><span class="text-cyan-400">Metro System</span>
+                Autonomous Metro<br><span class="text-cyan-400">Control System</span>
             </h1>
             <h2 class="text-xl md:text-2xl text-gray-400 font-mono mb-12 uppercase tracking-widest border-b border-cyan-800 pb-4">
-                RTOS-Based Hybrid Sensor Simulation
+                RTOS-Based Distributed Embedded Simulation
             </h2>
             
             <div class="flex gap-6 mt-8">
-                <div class="scada-panel px-6 py-3 font-mono text-sm text-cyan-300 border-l-4 border-l-cyan-400"><i class="fas fa-microchip mr-2"></i>ATmega128</div>
+                <div class="scada-panel px-6 py-3 font-mono text-sm text-cyan-300 border-l-4 border-l-cyan-400"><i class="fas fa-microchip mr-2"></i>ATmega128 Nodes</div>
                 <div class="scada-panel px-6 py-3 font-mono text-sm text-green-400 border-l-4 border-l-green-400"><i class="fas fa-layer-group mr-2"></i>FreeRTOS</div>
                 <div class="scada-panel px-6 py-3 font-mono text-sm text-orange-400 border-l-4 border-l-orange-400"><i class="fas fa-desktop mr-2"></i>SCADA UI</div>
             </div>
@@ -299,90 +295,75 @@
         </div>
     </div>
 
-    <!-- Slide 2: Core Concept -->
     <div class="slide" id="slide-2">
-        <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-brain mr-3"></i>Core Concept</h2>
+        <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-brain mr-3"></i>Core Concept & Architecture</h2>
         
         <div class="grid grid-cols-2 gap-12 h-full">
-            <!-- Left: What it is NOT -->
             <div class="scada-panel p-8 flex flex-col items-center justify-center border-red-900">
                 <i class="fas fa-clock text-6xl text-gray-600 mb-6"></i>
-                <h3 class="text-2xl text-gray-500 line-through mb-4">Time-Based Simulation</h3>
-                <p class="text-center text-gray-500 font-mono text-sm">Trains moving solely based on pre-calculated delays or timers. Prone to desynchronization.</p>
+                <h3 class="text-2xl text-gray-500 line-through mb-4">Time-Based Delays</h3>
+                <p class="text-center text-gray-500 font-mono text-sm">Trains moving solely based on pre-calculated software delays. Prone to desynchronization and unsafe states.</p>
                 <div class="mt-8 px-4 py-2 bg-red-900/30 border border-red-800 text-red-500 font-mono uppercase text-sm">Status: Rejected</div>
             </div>
             
-            <!-- Right: What it IS -->
             <div class="scada-panel p-8 flex flex-col items-center justify-center border-glow-blue bg-cyan-900/10">
                 <div class="relative mb-6">
                     <i class="fas fa-network-wired text-6xl text-cyan-400 glow-blue"></i>
                     <i class="fas fa-bolt absolute -top-2 -right-4 text-yellow-400 text-2xl animate-pulse"></i>
                 </div>
-                <h3 class="text-3xl text-cyan-300 font-bold mb-4 glow-blue text-center">Event-Driven Sensor Logic</h3>
+                <h3 class="text-3xl text-cyan-300 font-bold mb-4 glow-blue text-center">Event-Driven Distributed Logic</h3>
                 <ul class="text-gray-300 font-mono space-y-4 w-full">
-                    <li class="flex items-start"><i class="fas fa-check-square text-green-400 mr-3 mt-1"></i> <span><b>Passive Nodes:</b> Stations act as sensors, triggering events upon train detection.</span></li>
-                    <li class="flex items-start"><i class="fas fa-check-square text-green-400 mr-3 mt-1"></i> <span><b>Active Processing:</b> Central ECU processes asynchronous events in real-time.</span></li>
-                    <li class="flex items-start"><i class="fas fa-check-square text-green-400 mr-3 mt-1"></i> <span><b>Deterministic:</b> Behavior is dictated by actual physical state, not a clock.</span></li>
+                    <li class="flex items-start"><i class="fas fa-check-square text-green-400 mr-3 mt-1"></i> <span><b>Local Autonomy:</b> Train ECUs process local safety without waiting for central commands.</span></li>
+                    <li class="flex items-start"><i class="fas fa-check-square text-green-400 mr-3 mt-1"></i> <span><b>Global Supervision:</b> Central ECU processes asynchronous events from Station nodes.</span></li>
+                    <li class="flex items-start"><i class="fas fa-check-square text-green-400 mr-3 mt-1"></i> <span><b>Deterministic:</b> Behavior is dictated by physical states and RTOS priority scheduling.</span></li>
                 </ul>
             </div>
         </div>
     </div>
 
-    <!-- Slide 3: Architecture -->
     <div class="slide" id="slide-3">
-        <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-sitemap mr-3"></i>System Architecture</h2>
+        <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-sitemap mr-3"></i>System Architecture Layers</h2>
         
         <div class="relative w-full h-full flex items-center justify-center pt-8">
-            <!-- Central ECU -->
             <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scada-panel border-glow-blue p-6 z-20 w-64 text-center bg-gray-900">
                 <i class="fas fa-server text-4xl text-cyan-400 mb-2"></i>
-                <h3 class="text-xl font-bold text-white mb-1">Central Control ECU</h3>
-                <p class="text-xs text-cyan-300 font-mono">Master Decision Engine</p>
+                <h3 class="text-xl font-bold text-white mb-1">Central Supervisory ECU</h3>
+                <p class="text-xs text-cyan-300 font-mono">Master Coordination Engine</p>
             </div>
 
-            <!-- Trains -->
             <div class="absolute top-10 left-10 scada-panel p-4 w-56 border-orange-500/50">
                 <i class="fas fa-train text-orange-400 text-2xl mb-2"></i>
                 <h4 class="font-bold text-white">4x Train ECUs</h4>
-                <p class="text-xs font-mono text-gray-400">Active Agents (Motors, Doors)</p>
+                <p class="text-xs font-mono text-gray-400">Autonomous FSM & Motors</p>
             </div>
             
-            <!-- Stations -->
             <div class="absolute bottom-10 left-10 scada-panel p-4 w-56 border-green-500/50">
                 <i class="fas fa-building text-green-400 text-2xl mb-2"></i>
                 <h4 class="font-bold text-white">10x Station ECUs</h4>
-                <p class="text-xs font-mono text-gray-400">Passive Sensors (IR/Ultrasonic)</p>
+                <p class="text-xs font-mono text-gray-400">Passive Nodes (IR/Occupancy)</p>
             </div>
 
-            <!-- Dashboard -->
             <div class="absolute top-10 right-10 scada-panel p-4 w-56 border-blue-500/50">
                 <i class="fas fa-desktop text-blue-400 text-2xl mb-2"></i>
-                <h4 class="font-bold text-white">SCADA Dashboard</h4>
-                <p class="text-xs font-mono text-gray-400">Real-time Visualization</p>
+                <h4 class="font-bold text-white">Web SCADA Dashboard</h4>
+                <p class="text-xs font-mono text-gray-400">Supervisory Visualization</p>
             </div>
 
-            <!-- Mobile -->
             <div class="absolute bottom-10 right-10 scada-panel p-4 w-56 border-purple-500/50">
-                <i class="fas fa-mobile-alt text-purple-400 text-2xl mb-2"></i>
-                <h4 class="font-bold text-white">Mobile App</h4>
-                <p class="text-xs font-mono text-gray-400">Remote Monitoring / Alerting</p>
+                <i class="fas fa-network-wired text-purple-400 text-2xl mb-2"></i>
+                <h4 class="font-bold text-white">Python Gateway</h4>
+                <p class="text-xs font-mono text-gray-400">Middleware & WebSockets</p>
             </div>
 
-            <!-- SVG Connecting Lines -->
             <svg class="absolute top-0 left-0 w-full h-full z-10 pointer-events-none" style="stroke: rgba(0, 240, 255, 0.3); stroke-width: 2; fill: none; stroke-dasharray: 4;">
-                <!-- Central to Top Left (Trains) -->
                 <path d="M calc(50% - 128px) 50% L calc(50% - 150px) 50% L calc(50% - 150px) calc(10% + 50px) L 10% calc(10% + 50px)" class="animate-pulse"/>
-                <!-- Central to Bottom Left (Stations) -->
                 <path d="M calc(50% - 128px) 50% L calc(50% - 150px) 50% L calc(50% - 150px) calc(90% - 50px) L 10% calc(90% - 50px)" class="animate-pulse"/>
-                <!-- Central to Top Right (Dashboard) -->
                 <path d="M calc(50% + 128px) 50% L calc(50% + 150px) 50% L calc(50% + 150px) calc(10% + 50px) L 90% calc(10% + 50px)" class="animate-pulse"/>
-                <!-- Central to Bottom Right (Mobile) -->
                 <path d="M calc(50% + 128px) 50% L calc(50% + 150px) 50% L calc(50% + 150px) calc(90% - 50px) L 90% calc(90% - 50px)" class="animate-pulse"/>
             </svg>
         </div>
     </div>
 
-    <!-- Slide 4: Train Behavior -->
     <div class="slide" id="slide-4">
         <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-exchange-alt mr-3"></i>Train System Behavior (Dual Line)</h2>
         
@@ -390,50 +371,41 @@
             <div class="flex-1">
                 <h3 class="text-lg text-white border-b border-gray-700 pb-2 mb-4 font-mono">Operational Parameters</h3>
                 <ul class="text-sm text-cyan-100 font-mono space-y-2">
-                    <li><i class="fas fa-caret-right text-cyan-500 mr-2"></i>Dedicated tracks for <b>Forward</b> and <b>Return</b> routes.</li>
-                    <li><i class="fas fa-caret-right text-cyan-500 mr-2"></i>Distinct train models operating simultaneously on parallel lines.</li>
-                    <li><i class="fas fa-caret-right text-cyan-500 mr-2"></i>Continuous real-time telemetry streaming via I2C.</li>
+                    <li><i class="fas fa-caret-right text-cyan-500 mr-2"></i>Two metro directions: <b>Forward</b> and <b>Return</b> routes.</li>
+                    <li><i class="fas fa-caret-right text-cyan-500 mr-2"></i>Four autonomous trains operating with Automatic terminal switching.</li>
+                    <li><i class="fas fa-caret-right text-cyan-500 mr-2"></i>Continuous telemetry streaming via I2C & UART.</li>
                 </ul>
             </div>
         </div>
 
-        <!-- Animation Container -->
         <div class="scada-panel p-8 mt-4 relative h-64 flex flex-col justify-center gap-12 bg-black/50 border-gray-700">
             
-            <!-- Forward Track -->
             <div class="relative w-full">
                 <div class="absolute -top-6 left-2 text-[10px] font-mono font-bold text-cyan-400 tracking-wider">FORWARD LINE</div>
                 <div class="w-full h-1.5 bg-gray-800 relative mx-auto shadow-[0_0_10px_rgba(0,240,255,0.2)]">
-                    <!-- Stations -->
                     <div class="absolute top-1/2 left-[5%] transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-cyan-500 rounded-full node-pulse"></div>
                     <div class="absolute top-1/2 left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gray-500 rounded-full"></div>
                     <div class="absolute top-1/2 left-[90%] transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-cyan-500 rounded-full"></div>
                     
-                    <!-- Labels -->
                     <div class="absolute top-4 left-[5%] transform -translate-x-1/2 text-[9px] font-mono text-gray-500">ST-01</div>
                     <div class="absolute top-4 left-[90%] transform -translate-x-1/2 text-[9px] font-mono text-gray-500">ST-10</div>
 
-                    <!-- Animated Train (Modern) -->
                     <div class="train-fwd w-14 h-7 bg-cyan-950 border border-cyan-400 rounded flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.6)]">
                         <i class="fas fa-subway text-cyan-100 text-sm"></i>
                     </div>
                 </div>
             </div>
 
-            <!-- Return Track -->
             <div class="relative w-full">
                 <div class="absolute -top-6 left-2 text-[10px] font-mono font-bold text-orange-400 tracking-wider">RETURN LINE</div>
                 <div class="w-full h-1.5 bg-gray-800 relative mx-auto shadow-[0_0_10px_rgba(255,170,0,0.2)]">
-                    <!-- Stations -->
                     <div class="absolute top-1/2 left-[5%] transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-orange-500 rounded-full node-pulse"></div>
                     <div class="absolute top-1/2 left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gray-500 rounded-full"></div>
                     <div class="absolute top-1/2 left-[90%] transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-orange-500 rounded-full"></div>
                     
-                    <!-- Labels -->
                     <div class="absolute top-4 left-[5%] transform -translate-x-1/2 text-[9px] font-mono text-gray-500">ST-01</div>
                     <div class="absolute top-4 left-[90%] transform -translate-x-1/2 text-[9px] font-mono text-gray-500">ST-10</div>
 
-                    <!-- Animated Train (Classic) -->
                     <div class="train-ret w-14 h-7 bg-orange-950 border border-orange-400 rounded flex items-center justify-center shadow-[0_0_15px_rgba(255,170,0,0.6)]">
                         <i class="fas fa-train-tram text-orange-100 text-sm"></i>
                     </div>
@@ -443,41 +415,37 @@
         </div>
     </div>
 
-    <!-- Slide 5: RTOS Design -->
     <div class="slide" id="slide-5">
-        <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-layer-group mr-3"></i>RTOS Task Design</h2>
+        <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-layer-group mr-3"></i>RTOS Task Design (SRS Mapping)</h2>
         
         <div class="grid grid-cols-3 gap-6 h-full">
-            <!-- Central ECU Tasks -->
             <div class="scada-panel p-5 border-t-4 border-cyan-500">
                 <h3 class="text-center font-bold text-cyan-300 mb-4 bg-cyan-900/30 py-2">CENTRAL ECU TASKS</h3>
                 <div class="space-y-3 font-mono text-sm">
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-red-500 flex justify-between"><span>Collision Detect</span> <span class="text-red-400">P1</span></div>
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-orange-500 flex justify-between"><span>Event Processor</span> <span class="text-orange-400">P2</span></div>
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-yellow-500 flex justify-between"><span>Scheduler</span> <span class="text-yellow-400">P3</span></div>
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-blue-500 flex justify-between"><span>Comm/Network</span> <span class="text-blue-400">P4</span></div>
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-gray-500 flex justify-between"><span>SCADA Stream</span> <span class="text-gray-400">P5</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-red-500 flex justify-between"><span>Svc_Safe (Collision)</span> <span class="text-red-400">P1</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-orange-500 flex justify-between"><span>App_Super (Coord)</span> <span class="text-orange-400">P2</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-yellow-500 flex justify-between"><span>RTOS_Tasks (Sched)</span> <span class="text-yellow-400">P3</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-blue-500 flex justify-between"><span>MCAL_I2C (Bus)</span> <span class="text-blue-400">P4</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-gray-500 flex justify-between"><span>Svc_Comm (UART Sync)</span> <span class="text-gray-400">P5</span></div>
                 </div>
             </div>
 
-            <!-- Train ECU Tasks -->
             <div class="scada-panel p-5 border-t-4 border-orange-500">
                 <h3 class="text-center font-bold text-orange-300 mb-4 bg-orange-900/30 py-2">TRAIN ECU TASKS</h3>
                 <div class="space-y-3 font-mono text-sm">
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-red-500 flex justify-between"><span>Emergency Stop</span> <span class="text-red-400">P1</span></div>
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-orange-500 flex justify-between"><span>Motion Control</span> <span class="text-orange-400">P2</span></div>
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-yellow-500 flex justify-between"><span>Door Control</span> <span class="text-yellow-400">P3</span></div>
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-blue-500 flex justify-between"><span>Comm Link</span> <span class="text-blue-400">P4</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-red-500 flex justify-between"><span>Svc_Safe (E-Stop)</span> <span class="text-red-400">P1</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-orange-500 flex justify-between"><span>App_FSM (Auto Move)</span> <span class="text-orange-400">P2</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-yellow-500 flex justify-between"><span>MCAL_PWM (Motor)</span> <span class="text-yellow-400">P3</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-blue-500 flex justify-between"><span>Svc_Comm (Link)</span> <span class="text-blue-400">P4</span></div>
                 </div>
             </div>
 
-            <!-- Station ECU Tasks -->
             <div class="scada-panel p-5 border-t-4 border-green-500">
                 <h3 class="text-center font-bold text-green-300 mb-4 bg-green-900/30 py-2">STATION ECU TASKS</h3>
                 <div class="space-y-3 font-mono text-sm">
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-orange-500 flex justify-between"><span>Sensor Polling</span> <span class="text-orange-400">P1</span></div>
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-blue-500 flex justify-between"><span>Event Transmit</span> <span class="text-blue-400">P2</span></div>
-                    <div class="bg-gray-800/80 p-2 border-l-2 border-gray-500 flex justify-between text-gray-500"><span>Idle Task</span> <span class="text-gray-500">P3</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-orange-500 flex justify-between"><span>HAL_Sens (IR Poll)</span> <span class="text-orange-400">P1</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-blue-500 flex justify-between"><span>Svc_Comm (Event TX)</span> <span class="text-blue-400">P2</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-gray-500 flex justify-between text-gray-500"><span>HMI (Indicators)</span> <span class="text-gray-500">P3</span></div>
                 </div>
                 <div class="mt-8 text-xs text-gray-400 font-mono text-center">
                     <i class="fas fa-info-circle text-cyan-500 mr-1"></i> Preemptive priority-based scheduling implemented.
@@ -486,23 +454,20 @@
         </div>
     </div>
 
-    <!-- Slide 6: Communication -->
     <div class="slide" id="slide-6">
-        <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-microchip mr-3"></i>I2C Communication Architecture</h2>
+        <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-microchip mr-3"></i>Communication Architecture</h2>
         
         <div class="flex flex-col gap-6 font-mono w-full max-w-4xl mx-auto">
             
-            <!-- I2C Bus Visualization -->
             <div class="scada-panel p-4 flex flex-col items-center bg-gray-900/40 border-yellow-600/30">
                 <div class="w-full flex justify-between px-10 mb-2">
-                    <span class="text-yellow-400 text-xs font-bold">SDA (Data Line)</span>
-                    <span class="text-blue-400 text-xs font-bold">SCL (Clock Line)</span>
+                    <span class="text-yellow-400 text-xs font-bold">I2C Bus (Inter-ECU Synchronization)</span>
+                    <span class="text-blue-400 text-xs font-bold">UART (To Python Gateway)</span>
                 </div>
                 <div class="w-full h-1 bg-yellow-500/50 mb-2 relative"><div class="absolute w-4 h-4 bg-yellow-400 rounded-full -top-1.5 left-1/4 animate-pulse"></div></div>
                 <div class="w-full h-1 bg-blue-500/50 relative"><div class="absolute w-4 h-4 bg-blue-400 rounded-full -top-1.5 left-1/4 animate-pulse"></div></div>
             </div>
 
-            <!-- Station to Central (Slave to Master) -->
             <div class="scada-panel p-4 flex items-center">
                 <div class="w-1/4 text-center text-green-400"><i class="fas fa-building text-3xl mb-2 block"></i>Station Node<br><span class="text-[10px] text-gray-500">I2C Slave (0x30)</span></div>
                 <div class="w-2/4 flex flex-col items-center justify-center relative">
@@ -514,7 +479,6 @@
                 <div class="w-1/4 text-center text-cyan-400"><i class="fas fa-server text-3xl mb-2 block"></i>Central ECU<br><span class="text-[10px] text-gray-500">I2C Master (0x10)</span></div>
             </div>
 
-            <!-- Central to Train (Master to Slave) -->
             <div class="scada-panel p-4 flex items-center bg-gray-900/50">
                 <div class="w-1/4 text-center text-cyan-400"><i class="fas fa-server text-3xl mb-2 block"></i>Central ECU<br><span class="text-[10px] text-gray-500">I2C Master (0x10)</span></div>
                 <div class="w-2/4 flex flex-col items-center justify-center relative">
@@ -526,7 +490,6 @@
                 <div class="w-1/4 text-center text-orange-400"><i class="fas fa-train text-3xl mb-2 block"></i>Train Node<br><span class="text-[10px] text-gray-500">I2C Slave (0x21)</span></div>
             </div>
 
-            <!-- Train to Central (Slave to Master) -->
             <div class="scada-panel p-4 flex items-center">
                 <div class="w-1/4 text-center text-orange-400"><i class="fas fa-train text-3xl mb-2 block"></i>Train Node<br><span class="text-[10px] text-gray-500">I2C Slave (0x21)</span></div>
                 <div class="w-2/4 flex flex-col items-center justify-center relative">
@@ -542,12 +505,10 @@
         <style>@keyframes moveRight { 0% { left: 0%; opacity: 1; } 90% { opacity: 1; } 100% { left: 100%; opacity: 0; } }</style>
     </div>
 
-    <!-- Slide 7: Hybrid Movement Model -->
     <div class="slide" id="slide-7">
         <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-compress-arrows-alt mr-3"></i>Hybrid Movement Model</h2>
         
         <div class="flex gap-6 h-[60vh]">
-            <!-- Embedded Logic -->
             <div class="w-1/2 scada-panel p-6 flex flex-col">
                 <h3 class="text-xl font-bold text-gray-300 border-b border-gray-700 pb-2 mb-4 font-mono">1. Embedded Logic (Discrete)</h3>
                 <p class="text-sm text-gray-400 mb-4 font-mono">System state changes instantly based on hardware sensor interrupts.</p>
@@ -565,20 +526,17 @@
                 </div>
             </div>
 
-            <!-- Visualization -->
             <div class="w-1/2 scada-panel p-6 flex flex-col bg-cyan-900/10 border-cyan-500/30">
                 <h3 class="text-xl font-bold text-cyan-300 border-b border-cyan-800 pb-2 mb-4 font-mono">2. Dashboard Interpolation (Continuous)</h3>
                 <p class="text-sm text-cyan-200/70 mb-4 font-mono">SCADA UI interpolates smooth animations between discrete embedded events.</p>
                 
                 <div class="flex-1 border border-cyan-800/50 bg-[#02050a] relative flex items-center justify-center p-8">
-                    <!-- Virtual Track -->
                     <div class="w-full h-1 bg-cyan-900 relative">
                         <div class="absolute left-0 top-[-8px] w-4 h-4 rounded-full border-2 border-cyan-500 bg-black"></div>
                         <div class="absolute right-0 top-[-8px] w-4 h-4 rounded-full border-2 border-cyan-500 bg-black"></div>
                         <span class="absolute left-0 -top-6 text-xs font-mono text-gray-500">ST_02</span>
                         <span class="absolute right-0 -top-6 text-xs font-mono text-gray-500">ST_03</span>
                         
-                        <!-- Smooth moving UI element -->
                         <div class="absolute top-[-12px] left-[10%] w-6 h-6 bg-cyan-400 rounded flex items-center justify-center shadow-[0_0_15px_#00f0ff] animate-[smoothTransit_4s_ease-in-out_infinite]">
                             <i class="fas fa-subway text-black text-[10px]"></i>
                         </div>
@@ -589,39 +547,30 @@
         <style>@keyframes smoothTransit { 0% { left: 0%; } 10% { left: 0%; } 90% { left: calc(100% - 24px); } 100% { left: calc(100% - 24px); } }</style>
     </div>
 
-    <!-- Slide 8: SCADA Dashboard -->
     <div class="slide p-0" id="slide-8">
-        <!-- Interactive Full-Slide Dashboard -->
         <div class="w-full h-full bg-[#03070d] flex flex-col p-4 border-4 border-gray-900 relative">
             <div class="scanlines opacity-20"></div>
             
-            <!-- Header -->
             <div class="flex justify-between items-center border-b border-cyan-800 pb-2 mb-4">
                 <div class="text-cyan-400 font-mono text-2xl tracking-widest glow-blue font-bold">
                     <i class="fas fa-desktop mr-2"></i>SCADA CENTRAL
                 </div>
                 <div class="flex gap-4 font-mono text-xs">
-                    <div class="bg-gray-800 px-3 py-1 rounded text-green-400 border border-green-900"><i class="fas fa-circle mr-2 text-[8px] animate-pulse"></i>LINK UP (I2C)</div>
+                    <div class="bg-gray-800 px-3 py-1 rounded text-green-400 border border-green-900"><i class="fas fa-circle mr-2 text-[8px] animate-pulse"></i>LINK UP (I2C/UART)</div>
                     <div class="bg-gray-800 px-3 py-1 rounded text-cyan-400 border border-cyan-900" id="scada-clock">00:00:00 SYS_TIME</div>
                 </div>
             </div>
 
-            <!-- Main Layout -->
             <div class="flex-1 flex gap-4">
-                <!-- Map Area -->
                 <div class="w-3/4 scada-panel border-cyan-900/50 flex flex-col relative p-6 bg-gradient-to-b from-[#0a1120] to-[#040810]">
                     <div class="absolute top-4 left-4 text-xs font-mono text-cyan-600">LIVE DUAL-LINE METRO TOPOLOGY</div>
                     
                     <div class="flex-1 relative mt-8">
-                        <!-- Metro Lines -->
                         <svg width="100%" height="100%" class="absolute top-0 left-0">
-                            <!-- Forward Line (Cyan) -->
                             <path d="M 50 120 L 250 120 L 350 220 L 700 220" fill="none" stroke="#00f0ff" stroke-width="4" stroke-opacity="0.5" class="glow-blue"/>
-                            <!-- Return Line (Orange) -->
                             <path d="M 50 150 L 250 150 L 350 250 L 700 250" fill="none" stroke="#ffaa00" stroke-width="4" stroke-opacity="0.5" class="glow-orange"/>
                         </svg>
 
-                        <!-- Stations (Bridging both lines) -->
                         <div class="absolute top-[120px] left-[42px] w-4 h-[34px] bg-black border-2 border-gray-400 rounded-sm shadow-[0_0_5px_#fff]"></div>
                         <span class="absolute top-[165px] left-[35px] text-[10px] font-mono text-gray-400">ST-01</span>
                         
@@ -640,7 +589,6 @@
                         <div class="absolute top-[220px] left-[692px] w-4 h-[34px] bg-black border-2 border-gray-400 rounded-sm shadow-[0_0_5px_#fff]"></div>
                         <span class="absolute top-[265px] left-[685px] text-[10px] font-mono text-gray-400">ST-06</span>
 
-                        <!-- Train Markers -->
                         <div id="tr-1" class="absolute bg-cyan-900 border border-cyan-400 w-8 h-5 rounded flex items-center justify-center shadow-[0_0_10px_#00f0ff] transform -translate-x-1/2 -translate-y-1/2 z-10 transition-colors duration-200">
                             <span class="text-[8px] font-bold text-cyan-100">TR-1</span>
                         </div>
@@ -654,7 +602,6 @@
                             <span class="text-[8px] font-bold text-orange-100">TR-4</span>
                         </div>
                         
-                        <!-- Signals -->
                         <div class="absolute top-[100px] left-[220px] flex gap-[2px]">
                             <div class="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_5px_red]"></div>
                             <div class="w-2 h-2 rounded-full bg-gray-800"></div>
@@ -666,10 +613,8 @@
                     </div>
                 </div>
 
-                <!-- Side Panel (Logs & Stats) -->
                 <div class="w-1/4 flex flex-col gap-4">
                     
-                    <!-- Fleet Live Status -->
                     <div class="scada-panel p-4 border-cyan-500 mb-1 flex-none">
                         <div class="text-[10px] font-mono text-cyan-300 mb-2 border-b border-cyan-900 pb-1"><i class="fas fa-train mr-1"></i>FLEET LIVE STATUS</div>
                         <div id="fleet-status" class="space-y-1 font-mono">
@@ -680,7 +625,6 @@
                         </div>
                     </div>
 
-                    <!-- Status -->
                     <div class="scada-panel p-4 border-green-900 flex-none">
                         <div class="text-[10px] font-mono text-green-400 mb-2 border-b border-green-900 pb-1"><i class="fas fa-server mr-1"></i>SYS HEALTH</div>
                         <div class="flex justify-between text-[10px] font-mono text-gray-400 mb-1">
@@ -694,7 +638,6 @@
                         <div class="w-full h-1 bg-gray-800"><div class="h-full bg-blue-500 w-0 transition-all duration-300"></div></div>
                     </div>
 
-                    <!-- Logs -->
                     <div class="scada-panel flex-1 p-4 flex flex-col border-cyan-900">
                         <div class="text-xs font-mono text-gray-400 mb-2 border-b border-gray-800 pb-1">REAL-TIME LOGS</div>
                         <div class="flex-1 bg-black rounded p-2 overflow-hidden font-mono text-[10px] space-y-1" id="scada-logs">
@@ -710,101 +653,74 @@
         </div>
     </div>
 
-    <!-- Slide 9: Mobile Monitoring App -->
     <div class="slide" id="slide-9">
-        <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-mobile-alt mr-3"></i>Mobile Monitoring Layer</h2>
+        <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-network-wired mr-3"></i>Backend Middleware & Gateway</h2>
         
         <div class="flex justify-center items-center h-full gap-16">
-            <!-- Details -->
             <div class="w-1/3 scada-panel p-6">
-                <h3 class="text-lg font-bold text-purple-400 mb-4 font-mono"><i class="fas fa-wifi mr-2"></i>IoT App Features</h3>
+                <h3 class="text-lg font-bold text-purple-400 mb-4 font-mono"><i class="fas fa-cogs mr-2"></i>Python Gateway Features</h3>
                 <ul class="text-sm font-mono text-gray-300 space-y-4">
-                    <li><i class="fas fa-check text-green-500 mr-2"></i>Live Train Tracking</li>
-                    <li><i class="fas fa-check text-green-500 mr-2"></i>Push Notifications (Delays, Alerts)</li>
-                    <li><i class="fas fa-check text-green-500 mr-2"></i>Supervisor Emergency Control Override</li>
-                    <li><i class="fas fa-check text-green-500 mr-2"></i>MQTT / REST API Backend</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>UART to WebSockets Translation</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Lightweight API State Sync</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Event Logging & Data Aggregation</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Supervisory Command Dispatch</li>
                 </ul>
             </div>
 
-            <!-- Phone Mockup -->
-            <div class="w-[300px] h-[600px] border-[10px] border-gray-800 rounded-[3rem] bg-[#0f172a] relative shadow-[0_0_30px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col">
-                <!-- Notch -->
-                <div class="absolute top-0 left-1/2 transform -translate-x-1/2 w-1/2 h-6 bg-gray-800 rounded-b-xl z-20"></div>
-                
-                <!-- Status bar -->
-                <div class="flex justify-between items-center px-6 py-2 text-[10px] text-white z-10 pt-4 bg-gray-900">
-                    <span>12:00</span>
-                    <div class="flex gap-1"><i class="fas fa-signal"></i> <i class="fas fa-battery-full"></i></div>
+            <div class="w-[400px] h-[500px] border-4 border-gray-700 rounded-lg bg-[#0f172a] relative shadow-[0_0_30px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col">
+                <div class="flex items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                    <div class="flex gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <span class="ml-4 text-xs font-mono text-gray-400">gateway_server.py</span>
                 </div>
-
-                <!-- App UI -->
-                <div class="flex-1 bg-gray-900 p-4 font-sans text-white overflow-y-auto">
-                    <h1 class="text-xl font-bold text-cyan-400 mb-4 border-b border-gray-700 pb-2">MetroTrack Admin</h1>
-                    
-                    <!-- Train Status Card -->
-                    <div class="bg-gray-800 rounded-xl p-4 mb-4 border border-gray-700">
-                        <div class="flex justify-between items-center mb-2">
-                            <span class="font-bold text-lg">Train 01</span>
-                            <span class="bg-green-500/20 text-green-400 text-xs px-2 py-1 rounded">ON TIME</span>
-                        </div>
-                        <div class="text-xs text-gray-400 mb-4">Current: En route to ST-03</div>
-                        <!-- progress bar -->
-                        <div class="w-full h-2 bg-gray-700 rounded-full mb-2 overflow-hidden relative">
-                            <div class="h-full bg-cyan-400 w-[60%]"></div>
-                        </div>
-                        <div class="flex justify-between text-[10px] text-gray-500">
-                            <span>ST-02</span>
-                            <span>ST-03</span>
-                        </div>
-                    </div>
-
-                    <!-- Alerts Card -->
-                    <div class="bg-red-900/20 rounded-xl p-4 mb-4 border border-red-900/50">
-                        <div class="text-red-400 font-bold text-sm mb-1"><i class="fas fa-exclamation-triangle mr-1"></i> Warning</div>
-                        <div class="text-xs text-red-200/70">Slight delay on Train 03 due to door obstruction at ST-08.</div>
-                    </div>
-
-                    <!-- E-Stop Button -->
-                    <button class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-xl shadow-[0_0_15px_rgba(220,38,38,0.5)] transition-all active:scale-95">
-                        <i class="fas fa-hand-paper mr-2"></i> SYSTEM E-STOP
-                    </button>
+                
+                <div class="flex-1 bg-gray-900 p-4 font-mono text-xs text-green-400 overflow-y-auto space-y-2 leading-relaxed">
+                    <div>[INFO] Bootstrapping Backend Middleware...</div>
+                    <div>[INFO] Establishing UART connection to C-ECU... <span class="text-green-300">OK</span></div>
+                    <div>[INFO] WebSocket server running on ws://0.0.0.0:8080</div>
+                    <div class="text-cyan-400">[SYNC] Initial topology snapshot requested...</div>
+                    <div class="text-cyan-400">[SYNC] Discovered 4 T-ECUs, 10 S-ECUs.</div>
+                    <br>
+                    <div>[EVENT] RX: TR-1 departed ST-02</div>
+                    <div>[EVENT] TX: Broadcast status to 3 clients</div>
+                    <div class="text-yellow-400">[WARN] ST-08 heartbeat missed. Retrying (1/3)...</div>
+                    <div class="text-yellow-400">[WARN] ST-08 heartbeat missed. Retrying (2/3)...</div>
+                    <div class="text-red-500">[ALERT] ST-08 Unresponsive. Setting BYPASS_MODE.</div>
+                    <div>[EVENT] RX: TR-3 arrived ST-05</div>
+                    <div class="text-blue-400">[CMD] Dispatch: HOLD TR-3 via Supervisory Override</div>
+                    <span class="animate-pulse">_</span>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- REFINED Slide 10: Scenario 1 - Collision -->
     <div class="slide" id="slide-10">
         <h2 class="text-3xl font-bold text-red-500 glow-red border-b border-red-900 pb-2 mb-8 uppercase flex items-center">
-            <i class="fas fa-radiation mr-3"></i> Emergency Scenario 1: Collision Risk
+            <i class="fas fa-radiation mr-3"></i> Emergency Scenario 1: Invalid State / Collision Risk
         </h2>
         
         <div class="flex gap-8 h-full">
-            <!-- Animation Window -->
             <div class="w-1/2 scada-panel bg-[#02050a] flex flex-col items-center justify-center relative p-8 border-red-900/50">
                 <div class="absolute top-4 left-4 text-xs font-mono text-red-500 animate-pulse"><i class="fas fa-exclamation-circle mr-1"></i>LIVE SIMULATION</div>
                 
-                <!-- The Track -->
                 <div class="w-full h-3 bg-gray-800 relative mt-12 rounded">
                     
-                    <!-- Detection Zone (Flashes Red) -->
                     <div class="absolute top-1/2 left-[55%] transform -translate-y-1/2 w-[35%] h-12 border-2 rounded anim-s1-zone z-0 pointer-events-none"></div>
 
-                    <!-- Train 1 (Stationary) -->
                     <div class="absolute top-1/2 left-[80%] transform -translate-y-1/2 w-16 h-8 bg-gray-900 border border-gray-500 rounded flex items-center justify-center text-xs font-bold font-mono text-gray-300 z-10 shadow-lg">TR-1 (STOP)</div>
                     
-                    <!-- Train 2 (Approaching) -->
                     <div class="absolute top-1/2 transform -translate-y-1/2 w-16 h-8 bg-[#0a192f] border-2 rounded flex items-center justify-center text-xs font-bold font-mono text-white anim-s1-train z-20 shadow-lg">TR-2</div>
                 </div>
 
-                <!-- ECU Interrupt Signal -->
                 <div class="absolute top-1/3 left-1/2 anim-s1-text font-bold font-mono text-red-500 bg-[#2a0808] border-2 border-red-500 px-6 py-2 rounded-lg shadow-[0_0_20px_rgba(255,0,0,0.6)] z-30 flex flex-col items-center">
-                    <span class="text-xl">INTERRUPT (P1)</span>
+                    <span class="text-xl">SAFETY LOOP (P1)</span>
                     <span class="text-xs text-white">E-STOP BROADCAST</span>
                 </div>
             </div>
 
-            <!-- Explanation Steps -->
             <div class="w-1/2 flex flex-col gap-4 justify-center">
                 <h3 class="text-xl font-bold text-gray-300 font-mono mb-4">RTOS Response Sequence</h3>
                 
@@ -816,63 +732,55 @@
                 <div class="scada-panel p-5 border-l-4 border-gray-700 step-2 flex items-center bg-[#070d17]">
                     <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-4 text-red-400">2</div>
                     <div class="font-mono text-sm flex flex-col gap-1">
-                        <span>High Priority Interrupt triggered!</span>
-                        <span class="text-red-400 text-xs">CollisionTask (P1) preempts the normal Scheduler.</span>
+                        <span>High Priority Safety Task triggered!</span>
+                        <span class="text-red-400 text-xs">Svc_Safe (P1) preempts the normal Scheduler.</span>
                     </div>
                 </div>
 
                 <div class="scada-panel p-5 border-l-4 border-gray-700 step-3 flex items-center bg-[#070d17]">
                     <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-4 text-orange-400">3</div>
-                    <div class="font-mono text-sm">Central ECU broadcasts E-STOP via I2C. Train halts instantly.</div>
+                    <div class="font-mono text-sm">Central ECU broadcasts E-STOP via I2C. Sector locks instantly.</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- REFINED Slide 11: Scenario 2 - Comm Loss -->
     <div class="slide" id="slide-11">
         <h2 class="text-3xl font-bold text-orange-500 glow-orange border-b border-orange-900 pb-2 mb-8 uppercase flex items-center">
-            <i class="fas fa-unlink mr-3"></i> Emergency Scenario 2: Communication Loss
+            <i class="fas fa-unlink mr-3"></i> Emergency Scenario 2: Train Comm Loss
         </h2>
         
         <div class="flex gap-8 h-full">
-            <!-- Animation Window -->
             <div class="w-1/2 scada-panel bg-[#02050a] flex flex-col items-center justify-center relative p-8 border-orange-900/50">
                 <div class="absolute top-4 left-4 text-xs font-mono text-orange-500 animate-pulse"><i class="fas fa-exclamation-circle mr-1"></i>LIVE SIMULATION</div>
                 
                 <div class="w-full flex justify-between items-center relative h-32 px-12">
-                    <!-- Central Server -->
                     <div class="w-20 h-20 bg-[#0a192f] border-2 border-cyan-500 rounded flex flex-col items-center justify-center z-10 shadow-[0_0_15px_#00f0ff]">
                         <i class="fas fa-server text-cyan-400 text-2xl mb-1"></i>
                         <span class="text-[9px] font-mono text-cyan-300">Central ECU</span>
                     </div>
 
-                    <!-- Heartbeat packet -->
                     <div class="h-1 bg-cyan-400 absolute left-[25%] anim-s2-signal z-0"></div>
 
-                    <!-- Connection Break X -->
                     <div class="absolute left-1/2 transform -translate-x-1/2 text-5xl text-red-500 anim-s2-x z-20">
                         <i class="fas fa-times-circle bg-[#02050a] rounded-full shadow-[0_0_20px_red]"></i>
                     </div>
 
-                    <!-- Train -->
                     <div class="w-24 h-16 bg-[#0a192f] border-2 rounded flex flex-col items-center justify-center z-10 anim-s2-train relative">
                         <i class="fas fa-train text-white text-xl mb-1"></i>
                         <span class="text-[9px] font-mono text-gray-300">Train ECU</span>
                         
-                        <!-- Local Timer Popup -->
                         <div class="absolute -top-10 bg-black border border-gray-700 px-3 py-1 text-xs font-mono rounded font-bold anim-s2-timer whitespace-nowrap shadow-lg"></div>
                     </div>
                 </div>
             </div>
 
-            <!-- Explanation Steps -->
             <div class="w-1/2 flex flex-col gap-4 justify-center">
-                <h3 class="text-xl font-bold text-gray-300 font-mono mb-4">RTOS Response Sequence</h3>
+                <h3 class="text-xl font-bold text-gray-300 font-mono mb-4">Local Safety Fallback Sequence</h3>
                 
                 <div class="scada-panel p-5 border-l-4 border-gray-700 step-1 flex items-center bg-[#070d17]">
                     <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-4 text-cyan-400">1</div>
-                    <div class="font-mono text-sm">Train ECU constantly expects an I2C polling heartbeat.</div>
+                    <div class="font-mono text-sm">Train ECU expects continuous I2C polling heartbeat.</div>
                 </div>
                 
                 <div class="scada-panel p-5 border-l-4 border-gray-700 step-2 flex items-center bg-[#070d17]">
@@ -885,77 +793,69 @@
 
                 <div class="scada-panel p-5 border-l-4 border-gray-700 step-3 flex items-center bg-[#070d17]">
                     <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-4 text-red-400">3</div>
-                    <div class="font-mono text-sm">Timeout Exceeded. Train engages local fail-safe auto-brakes.</div>
+                    <div class="font-mono text-sm">Timeout Exceeded. Train engages local fail-safe auto-brakes independently.</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- REFINED Slide 12: Scenario 3 - Sensor Malfunction -->
     <div class="slide" id="slide-12">
         <h2 class="text-3xl font-bold text-yellow-500 glow-orange border-b border-yellow-900 pb-2 mb-8 uppercase flex items-center">
-            <i class="fas fa-eye-slash mr-3"></i> Emergency Scenario 3: Sensor Malfunction
+            <i class="fas fa-eye-slash mr-3"></i> Emergency Scenario 3: Graceful Degradation (Station Bypass)
         </h2>
         
         <div class="flex gap-8 h-full">
-            <!-- Animation Window -->
             <div class="w-1/2 scada-panel bg-[#02050a] flex flex-col items-center justify-center relative p-8 border-yellow-900/50">
                 <div class="absolute top-4 left-4 text-xs font-mono text-yellow-500 animate-pulse"><i class="fas fa-exclamation-circle mr-1"></i>LIVE SIMULATION</div>
                 
-                <!-- Track Container -->
                 <div class="w-full border-2 rounded p-8 anim-s3-track relative z-10 bg-[#050b14]">
                     
                     <div class="w-full h-1 bg-gray-600 relative">
-                        <!-- Stations -->
                         <div class="absolute top-1/2 left-[10%] transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-green-500 shadow-[0_0_10px_lime]"></div>
                         <span class="absolute top-4 left-[10%] transform -translate-x-1/2 text-[10px] font-mono text-gray-400">ST-A</span>
 
                         <div class="absolute top-1/2 left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-gray-800 border-2 border-red-500 flex items-center justify-center">
                             <i class="fas fa-times text-[8px] text-red-500"></i>
                         </div>
-                        <span class="absolute top-4 left-[50%] transform -translate-x-1/2 text-[10px] font-mono text-red-400">ST-B (FAIL)</span>
+                        <span class="absolute top-4 left-[50%] transform -translate-x-1/2 text-[10px] font-mono text-red-400">ST-B (OFFLINE)</span>
 
                         <div class="absolute top-1/2 left-[90%] transform -translate-x-1/2 -translate-y-1/2 w-4 h-4 rounded-full bg-gray-600"></div>
                         <span class="absolute top-4 left-[90%] transform -translate-x-1/2 text-[10px] font-mono text-gray-400">ST-C</span>
 
-                        <!-- Train -->
                         <div class="absolute top-1/2 transform -translate-y-1/2 w-12 h-6 bg-cyan-900 border border-cyan-400 rounded flex items-center justify-center text-[10px] font-bold text-white anim-s3-train z-20">TR-1</div>
                     </div>
                 </div>
 
-                <!-- Logical Timer Bar -->
                 <div class="w-3/4 mt-12 bg-gray-900 border border-gray-700 h-4 rounded overflow-hidden relative">
                     <div class="absolute top-0 left-0 h-full anim-s3-bar"></div>
-                    <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[9px] font-mono text-white z-10 drop-shadow-md">LOGICAL TRANSIT TIMER</span>
+                    <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[9px] font-mono text-white z-10 drop-shadow-md">HEARTBEAT MONITOR TIMER</span>
                 </div>
             </div>
 
-            <!-- Explanation Steps -->
             <div class="w-1/2 flex flex-col gap-4 justify-center">
-                <h3 class="text-xl font-bold text-gray-300 font-mono mb-4">RTOS Response Sequence</h3>
+                <h3 class="text-xl font-bold text-gray-300 font-mono mb-4">Graceful Degradation Sequence</h3>
                 
                 <div class="scada-panel p-5 border-l-4 border-gray-700 step-s3-1 flex items-center bg-[#070d17]">
                     <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-4 text-cyan-400">1</div>
-                    <div class="font-mono text-sm">Train departs ST-A. Central ECU starts expected transit timer.</div>
+                    <div class="font-mono text-sm">Central ECU polls active nodes. Train departs ST-A normally.</div>
                 </div>
                 
                 <div class="scada-panel p-5 border-l-4 border-gray-700 step-s3-2 flex items-center bg-[#070d17]">
                     <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-4 text-yellow-400">2</div>
                     <div class="font-mono text-sm flex flex-col gap-1">
-                        <span>Train passes ST-B, but sensor is dead.</span>
-                        <span class="text-yellow-400 text-xs">No 'Arrival' event is generated.</span>
+                        <span>Station ECU B misses heartbeat responses.</span>
+                        <span class="text-yellow-400 text-xs">Central ECU marks ST-B as offline.</span>
                     </div>
                 </div>
 
                 <div class="scada-panel p-5 border-l-4 border-gray-700 step-s3-3 flex items-center bg-[#070d17]">
                     <div class="w-8 h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-4 text-red-400">3</div>
-                    <div class="font-mono text-sm">Max transit time exceeded. System enters Degraded Mode and locks sector.</div>
+                    <div class="font-mono text-sm">Station Bypass Flag activated. Trains skip ST-B gracefully without stopping.</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Slide 13: Proteus Simulation -->
     <div class="slide" id="slide-13">
         <h2 class="text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-8 uppercase"><i class="fas fa-microchip mr-3"></i>Proteus Hardware Simulation</h2>
         
@@ -985,7 +885,7 @@
                             <i class="fas fa-wave-square text-2xl text-green-400"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-white font-mono">IR / Ultrasonic Sensors</h4>
+                            <h4 class="font-bold text-white font-mono">IR / Occupancy Sensors</h4>
                             <p class="text-xs text-gray-400">Simulated logic inputs (buttons in Proteus) for stations.</p>
                         </div>
                     </li>
@@ -994,18 +894,16 @@
                             <i class="fas fa-project-diagram text-2xl text-blue-400"></i>
                         </div>
                         <div>
-                            <h4 class="font-bold text-white font-mono">I2C Bus / Network</h4>
-                            <p class="text-xs text-gray-400">I2C Debugger and SDA/SCL lines connecting all nodes.</p>
+                            <h4 class="font-bold text-white font-mono">I2C & UART Bus</h4>
+                            <p class="text-xs text-gray-400">Inter-ECU Synchronization and Gateway Telemetry.</p>
                         </div>
                     </li>
                 </ul>
             </div>
             
             <div class="w-1/2 scada-panel p-2 border-gray-700 h-[400px] flex items-center justify-center bg-[#b8c6bc] relative">
-                <!-- Abstract representation of a Proteus schematic -->
                 <div class="absolute top-2 left-2 text-black font-mono text-[10px] opacity-50">ISIS Schematic Capture</div>
                 <div class="w-[80%] h-[80%] border-2 border-blue-800 relative">
-                    <!-- Chip -->
                     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-20 h-20 bg-gray-800 border-2 border-black flex flex-col items-center justify-center text-[8px] text-white">
                         <span>ATMEGA128</span>
                         <div class="absolute top-2 -left-2 w-2 h-1 bg-gray-400"></div>
@@ -1015,7 +913,6 @@
                         <div class="absolute top-4 -right-2 w-2 h-1 bg-gray-400"></div>
                         <div class="absolute top-6 -right-2 w-2 h-1 bg-gray-400"></div>
                     </div>
-                    <!-- Wires -->
                     <svg class="w-full h-full absolute top-0 left-0" style="stroke: #000; stroke-width: 1; fill: none;">
                         <path d="M 0 50 L 100 50 M 200 50 L 300 50 M 150 0 L 150 100 M 150 200 L 150 300"/>
                     </svg>
@@ -1026,7 +923,6 @@
         </div>
     </div>
 
-    <!-- Slide 14: Summary -->
     <div class="slide" id="slide-14">
         <div class="flex flex-col items-center justify-center h-full text-center">
             <i class="fas fa-check-circle text-6xl text-green-500 glow-green mb-8"></i>
@@ -1040,8 +936,8 @@
                     <span class="text-xs text-gray-400 font-mono">Distributed RTOS ECUs ensure zero single-point-of-failure in train control.</span>
                 </div>
                 <div class="scada-panel p-4 border-l-4 border-green-500">
-                    <span class="text-green-400 font-bold block mb-1">True Real-Time</span>
-                    <span class="text-xs text-gray-400 font-mono">Event-driven sensor logic rather than error-prone timers.</span>
+                    <span class="text-green-400 font-bold block mb-1">Graceful Degradation</span>
+                    <span class="text-xs text-gray-400 font-mono">System handles hardware and comm loss via intelligent fail-safe loops.</span>
                 </div>
                 <div class="scada-panel p-4 border-l-4 border-orange-500">
                     <span class="text-orange-400 font-bold block mb-1">Modern Supervision</span>
