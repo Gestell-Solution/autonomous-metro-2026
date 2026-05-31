@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+<!-- <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -1256,6 +1256,1281 @@
         }
 
         // Initialize First View
+        updateUI();
+
+    </script>
+</body>
+</html> 
+---------------------------------------------------------------------------------------------------------------------------------------------------------------->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Autonomous Metro Supervisory Control System</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Base Styling & Typography */
+        :root {
+            --scada-bg: #050b14;
+            --scada-panel: rgba(12, 22, 45, 0.85);
+            --neon-blue: #00f0ff;
+            --neon-green: #39ff14;
+            --neon-red: #ff003c;
+            --neon-orange: #ffaa00;
+        }
+        
+        body {
+            background-color: var(--scada-bg);
+            color: #e0eaf5;
+            font-family: 'Inter', sans-serif;
+            overflow: hidden; /* Presentation mode */
+            margin: 0;
+            padding: 0;
+            background-image: 
+                linear-gradient(rgba(0, 240, 255, 0.03) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(0, 240, 255, 0.03) 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .font-mono { font-family: 'Share Tech Mono', monospace; }
+
+        /* Glowing Effects */
+        .glow-blue { text-shadow: 0 0 10px var(--neon-blue), 0 0 20px rgba(0, 240, 255, 0.5); }
+        .glow-green { text-shadow: 0 0 10px var(--neon-green); color: var(--neon-green); }
+        .glow-red { text-shadow: 0 0 10px var(--neon-red); color: var(--neon-red); }
+        .glow-orange { text-shadow: 0 0 10px var(--neon-orange); color: var(--neon-orange); }
+        
+        .border-glow-blue { border: 1px solid var(--neon-blue); box-shadow: 0 0 15px rgba(0, 240, 255, 0.2) inset, 0 0 15px rgba(0, 240, 255, 0.2); }
+        .border-glow-red { border: 1px solid var(--neon-red); box-shadow: 0 0 15px rgba(255, 0, 60, 0.2) inset, 0 0 15px rgba(255, 0, 60, 0.2); }
+
+        /* Panels */
+        .scada-panel {
+            background: var(--scada-panel);
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            border-radius: 8px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* CRT Scanline Overlay */
+        .scanlines {
+            position: fixed;
+            top: 0; left: 0; width: 100vw; height: 100vh;
+            background: linear-gradient(rgba(18, 16, 16, 0) 50%, rgba(0, 0, 0, 0.25) 50%), linear-gradient(90deg, rgba(255, 0, 0, 0.06), rgba(0, 255, 0, 0.02), rgba(0, 0, 255, 0.06));
+            background-size: 100% 4px, 3px 100%;
+            pointer-events: none;
+            z-index: 100;
+            opacity: 0.4;
+        }
+
+        /* Presentation Logic */
+        .slide {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            height: 100vh;
+            width: 100vw;
+            position: absolute;
+            top: 0; left: 0;
+            padding: 4rem 6rem;
+            box-sizing: border-box;
+            overflow-y: auto; /* Fallback for taller content */
+        }
+        .slide.active {
+            display: flex;
+            flex-direction: column;
+            opacity: 1;
+        }
+
+        /* Controls */
+        .controls {
+            position: fixed;
+            bottom: 20px;
+            right: 30px;
+            z-index: 50;
+            display: flex;
+            gap: 15px;
+        }
+        .btn {
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--neon-blue);
+            color: var(--neon-blue);
+            padding: 8px 16px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            border-radius: 4px;
+            transition: all 0.2s;
+            text-transform: uppercase;
+        }
+        .btn:hover {
+            background: var(--neon-blue);
+            color: #000;
+            box-shadow: 0 0 15px var(--neon-blue);
+        }
+        
+        .progress-bar-container {
+            position: fixed;
+            bottom: 0; left: 0; width: 100%; height: 4px;
+            background: #111;
+            z-index: 50;
+        }
+        .progress-bar {
+            height: 100%;
+            background: var(--neon-blue);
+            width: 0%;
+            transition: width 0.3s ease;
+            box-shadow: 0 0 10px var(--neon-blue);
+        }
+
+        /* Custom Animations */
+        @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+        .animate-blink { animation: blink 1.5s infinite; }
+        
+        @keyframes pulse-ring { 
+            0% { transform: scale(0.8); opacity: 0.5; box-shadow: 0 0 0 0 rgba(0, 240, 255, 0.7); } 
+            100% { transform: scale(1.2); opacity: 0; box-shadow: 0 0 0 20px rgba(0, 240, 255, 0); } 
+        }
+        .node-pulse { position: relative; }
+        .node-pulse::after {
+            content: ''; position: absolute; top: -5px; left: -5px; right: -5px; bottom: -5px;
+            border-radius: 50%; border: 2px solid var(--neon-blue); animation: pulse-ring 2s infinite;
+        }
+
+        @keyframes trackForward {
+            0% { left: 5%; opacity: 0; }
+            5% { opacity: 1; }
+            95% { opacity: 1; }
+            100% { left: 90%; opacity: 0; }
+        }
+        @keyframes trackReturn {
+            0% { left: 90%; opacity: 0; }
+            5% { opacity: 1; }
+            95% { opacity: 1; }
+            100% { left: 5%; opacity: 0; }
+        }
+        .train-fwd { position: absolute; top: -11px; animation: trackForward 8s linear infinite; }
+        .train-ret { position: absolute; top: -11px; animation: trackReturn 9s linear infinite; }
+
+        /* REFINED: Scenario 1 Animations (Collision) */
+        @keyframes smoothCollision {
+            0%, 15% { left: 10%; border-color: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue); }
+            40% { left: 55%; border-color: var(--neon-red); box-shadow: 0 0 20px var(--neon-red); }
+            45%, 85% { left: 55%; border-color: var(--neon-red); box-shadow: 0 0 20px var(--neon-red); }
+            100% { left: 10%; opacity: 0; }
+        }
+        @keyframes zoneFlash {
+            0%, 35% { background: rgba(255,0,0,0); border-color: transparent; }
+            36%, 85% { background: rgba(255,0,0,0.2); border-color: var(--neon-red); }
+            100% { background: rgba(255,0,0,0); border-color: transparent; }
+        }
+        @keyframes textPopup {
+            0%, 38% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
+            42%, 80% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+            100% { opacity: 0; }
+        }
+        .anim-s1-train { animation: smoothCollision 6s ease-in-out infinite; }
+        .anim-s1-zone { animation: zoneFlash 6s infinite; }
+        .anim-s1-text { animation: textPopup 6s infinite; }
+
+        /* REFINED: Scenario 2 Animations (Comm Loss) */
+        @keyframes signalPulse {
+            0% { width: 0; opacity: 1; }
+            20% { width: 100px; opacity: 0; }
+            100% { width: 100px; opacity: 0; }
+        }
+        @keyframes showX {
+            0%, 25% { opacity: 0; transform: scale(0.5); }
+            30%, 85% { opacity: 1; transform: scale(1); }
+            100% { opacity: 0; }
+        }
+        @keyframes trainBrake {
+            0%, 40% { border-color: var(--neon-blue); box-shadow: 0 0 10px var(--neon-blue); }
+            45%, 85% { border-color: var(--neon-red); box-shadow: 0 0 20px var(--neon-red); }
+            100% { border-color: var(--neon-blue); }
+        }
+        @keyframes timerCountdown {
+            0%, 25% { content: '500ms'; color: var(--neon-green); }
+            35% { content: '200ms'; color: var(--neon-orange); }
+            45%, 85% { content: '0ms (FAIL)'; color: var(--neon-red); }
+            100% { content: '500ms'; color: var(--neon-green); }
+        }
+        .anim-s2-signal { animation: signalPulse 6s linear infinite; }
+        .anim-s2-x { animation: showX 6s infinite; }
+        .anim-s2-train { animation: trainBrake 6s infinite; }
+        .anim-s2-timer::after { content: '500ms'; animation: timerCountdown 6s infinite; }
+
+        /* REFINED: Scenario 3 Animations (Sensor Malfunction) */
+        @keyframes drivePast {
+            0% { left: 5%; }
+            100% { left: 95%; }
+        }
+        @keyframes barFill {
+            0%, 20% { width: 0%; background: var(--neon-green); }
+            60% { width: 80%; background: var(--neon-orange); }
+            70%, 90% { width: 100%; background: var(--neon-red); }
+            100% { width: 0%; }
+        }
+        @keyframes trackWarning {
+            0%, 65% { border-color: #1f2937; box-shadow: none; }
+            70%, 90% { border-color: var(--neon-orange); box-shadow: 0 0 15px rgba(255,170,0,0.5); }
+            100% { border-color: #1f2937; }
+        }
+        .anim-s3-train { animation: drivePast 7s linear infinite; }
+        .anim-s3-bar { animation: barFill 7s linear infinite; }
+        .anim-s3-track { animation: trackWarning 7s infinite; }
+
+        /* Highlight Steps Sync */
+        @keyframes stepHighlight {
+            0%, 20% { opacity: 0.4; }
+            25%, 45% { opacity: 1; color: white; border-color: var(--neon-blue); }
+            50%, 100% { opacity: 0.4; }
+        }
+        .step-1 { animation: stepHighlight 6s infinite; animation-delay: -5.5s; }
+        .step-2 { animation: stepHighlight 6s infinite; animation-delay: -3.5s; }
+        .step-3 { animation: stepHighlight 6s infinite; animation-delay: -1.5s; }
+
+        .step-s3-1 { animation: stepHighlight 7s infinite; animation-delay: -6.5s; }
+        .step-s3-2 { animation: stepHighlight 7s infinite; animation-delay: -4s; }
+        .step-s3-3 { animation: stepHighlight 7s infinite; animation-delay: -1.5s; }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: #000; }
+        ::-webkit-scrollbar-thumb { background: var(--neon-blue); border-radius: 3px; }
+
+        /* =========================================
+           MOBILE RESPONSIVE FIXES (MEDIA QUERIES)
+           ========================================= */
+        @media (max-width: 768px) {
+            body { overflow-y: auto; }
+            .slide {
+                padding: 2rem 1.5rem;
+                height: auto;
+                min-height: 100vh;
+                display: flex !important; /* Force flex to compute height properly */
+            }
+            .slide:not(.active) {
+                display: none !important;
+            }
+            
+            /* Typography adjustments */
+            h1 { font-size: 2.5rem !important; line-height: 1.2; }
+            h2 { font-size: 1.2rem !important; margin-bottom: 1.5rem !important; }
+            
+            /* Controls positioning for mobile */
+            .controls {
+                bottom: 10px; right: 10px; left: 10px;
+                justify-content: space-between;
+                background: rgba(0,0,0,0.8);
+                padding: 10px;
+                border-radius: 8px;
+            }
+
+            /* Slide 3 (Architecture Layer) Fix */
+            #slide-3 .relative { flex-direction: column; pt-0; height: auto; gap: 1rem;}
+            #slide-3 .absolute { 
+                position: relative !important; 
+                top: auto !important; left: auto !important; right: auto !important; bottom: auto !important; 
+                transform: none !important; 
+                width: 100% !important; 
+                margin: 0 auto;
+            }
+            #slide-3 svg { display: none; } /* Hide complex SVGs on mobile for cleaner look */
+
+            /* SCADA Map (Slide 8) Fix */
+            #slide-8 { padding: 10px; padding-bottom: 80px; }
+            #scada-map-container { overflow-x: auto; min-width: 100%; border-bottom: 1px solid var(--neon-blue); padding-bottom: 20px;}
+            #scada-map-inner { min-width: 800px; position: relative; height: 350px;}
+            
+            /* Scenario slides layout fix */
+            .h-64 { height: auto !important; min-height: 16rem; }
+            .h-\[60vh\] { height: auto !important; }
+            .gap-8 { gap: 1.5rem !important; }
+            
+            /* Adjust spacing between stacked elements */
+            .md\:flex-row > div { margin-bottom: 1rem; }
+            
+            /* Proteus Slide */
+            .w-\[400px\] { width: 100% !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="scanlines"></div>
+    
+    <div class="progress-bar-container">
+        <div class="progress-bar" id="progress-bar"></div>
+    </div>
+
+    <div class="controls">
+        <button class="btn" onclick="prevSlide()"><i class="fas fa-chevron-left mr-2"></i>Prev</button>
+        <span class="font-mono text-cyan-400 self-center" id="slide-counter">1 / X</span>
+        <button class="btn" onclick="nextSlide()">Next<i class="fas fa-chevron-right ml-2"></i></button>
+    </div>
+
+    <div class="slide active" id="slide-1">
+        <div class="flex flex-col items-center justify-center h-full text-center mt-10 md:mt-0">
+            <div class="mb-8 relative">
+                <i class="fas fa-train text-5xl md:text-7xl text-cyan-400 glow-blue animate-blink"></i>
+                <div class="absolute -top-4 -right-8 bg-red-600 text-white text-[10px] md:text-xs px-2 py-1 rounded font-mono font-bold border border-red-400 border-glow-red">LIVE STATUS: ACTIVE</div>
+            </div>
+            <h1 class="text-4xl md:text-7xl font-bold mb-4 glow-blue uppercase tracking-widest text-cyan-50">
+                Autonomous Metro<br><span class="text-cyan-400">Control System</span>
+            </h1>
+            <h2 class="text-lg md:text-2xl text-gray-400 font-mono mb-8 md:mb-12 uppercase tracking-widest border-b border-cyan-800 pb-4">
+                RTOS-Based Distributed Embedded Simulation
+            </h2>
+            
+            <div class="flex flex-col md:flex-row gap-4 md:gap-6 mt-4 md:mt-8 w-full md:w-auto">
+                <div class="scada-panel px-6 py-3 font-mono text-sm text-cyan-300 border-l-4 border-l-cyan-400"><i class="fas fa-microchip mr-2"></i>ATmega128 Nodes</div>
+                <div class="scada-panel px-6 py-3 font-mono text-sm text-green-400 border-l-4 border-l-green-400"><i class="fas fa-layer-group mr-2"></i>FreeRTOS</div>
+                <div class="scada-panel px-6 py-3 font-mono text-sm text-orange-400 border-l-4 border-l-orange-400"><i class="fas fa-desktop mr-2"></i>SCADA UI</div>
+            </div>
+            <p class="mt-12 md:mt-16 text-gray-500 font-mono text-xs md:text-sm animate-pulse mb-20 md:mb-0">PRESS NEXT OR ARROW KEYS TO INITIATE SEQUENCE</p>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-2">
+        <h2 class="text-xl md:text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-6 md:mb-8 uppercase"><i class="fas fa-brain mr-3"></i>Core Concept & Architecture</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-12 h-auto md:h-full pb-20 md:pb-0">
+            <div class="scada-panel p-6 md:p-8 flex flex-col items-center justify-center border-red-900">
+                <i class="fas fa-clock text-4xl md:text-6xl text-gray-600 mb-4 md:mb-6"></i>
+                <h3 class="text-xl md:text-2xl text-gray-500 line-through mb-4">Time-Based Delays</h3>
+                <p class="text-center text-gray-500 font-mono text-xs md:text-sm">Trains moving solely based on pre-calculated software delays. Prone to desynchronization and unsafe states.</p>
+                <div class="mt-6 md:mt-8 px-4 py-2 bg-red-900/30 border border-red-800 text-red-500 font-mono uppercase text-sm">Status: Rejected</div>
+            </div>
+            
+            <div class="scada-panel p-6 md:p-8 flex flex-col items-center justify-center border-glow-blue bg-cyan-900/10">
+                <div class="relative mb-4 md:mb-6">
+                    <i class="fas fa-network-wired text-4xl md:text-6xl text-cyan-400 glow-blue"></i>
+                    <i class="fas fa-bolt absolute -top-2 -right-4 text-yellow-400 text-xl md:text-2xl animate-pulse"></i>
+                </div>
+                <h3 class="text-xl md:text-3xl text-cyan-300 font-bold mb-4 glow-blue text-center">Event-Driven Distributed Logic</h3>
+                <ul class="text-gray-300 font-mono space-y-4 w-full text-xs md:text-base">
+                    <li class="flex items-start"><i class="fas fa-check-square text-green-400 mr-3 mt-1"></i> <span><b>Local Autonomy:</b> Train ECUs process local safety without waiting for central commands.</span></li>
+                    <li class="flex items-start"><i class="fas fa-check-square text-green-400 mr-3 mt-1"></i> <span><b>Global Supervision:</b> Central ECU processes asynchronous events from Station nodes.</span></li>
+                    <li class="flex items-start"><i class="fas fa-check-square text-green-400 mr-3 mt-1"></i> <span><b>Deterministic:</b> Behavior is dictated by physical states and RTOS priority scheduling.</span></li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-3">
+        <h2 class="text-xl md:text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-6 md:mb-8 uppercase"><i class="fas fa-sitemap mr-3"></i>System Architecture Layers</h2>
+        
+        <div class="relative w-full h-auto md:h-full flex items-center justify-center pt-4 md:pt-8 pb-20 md:pb-0">
+            <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 scada-panel border-glow-blue p-6 z-20 w-full md:w-64 text-center bg-gray-900">
+                <i class="fas fa-server text-3xl md:text-4xl text-cyan-400 mb-2"></i>
+                <h3 class="text-lg md:text-xl font-bold text-white mb-1">Central Supervisory ECU</h3>
+                <p class="text-[10px] md:text-xs text-cyan-300 font-mono">Master Coordination Engine</p>
+            </div>
+
+            <div class="absolute top-10 left-10 scada-panel p-4 w-full md:w-56 border-orange-500/50">
+                <i class="fas fa-train text-orange-400 text-xl md:text-2xl mb-2"></i>
+                <h4 class="font-bold text-white text-sm md:text-base">4x Train ECUs</h4>
+                <p class="text-[10px] md:text-xs font-mono text-gray-400">Autonomous FSM & Motors</p>
+            </div>
+            
+            <div class="absolute bottom-10 left-10 scada-panel p-4 w-full md:w-56 border-green-500/50">
+                <i class="fas fa-building text-green-400 text-xl md:text-2xl mb-2"></i>
+                <h4 class="font-bold text-white text-sm md:text-base">10x Station ECUs</h4>
+                <p class="text-[10px] md:text-xs font-mono text-gray-400">Passive Nodes (IR/Occupancy)</p>
+            </div>
+
+            <div class="absolute top-10 right-10 scada-panel p-4 w-full md:w-56 border-blue-500/50">
+                <i class="fas fa-desktop text-blue-400 text-xl md:text-2xl mb-2"></i>
+                <h4 class="font-bold text-white text-sm md:text-base">Web SCADA Dashboard</h4>
+                <p class="text-[10px] md:text-xs font-mono text-gray-400">Supervisory Visualization</p>
+            </div>
+
+            <div class="absolute bottom-10 right-10 scada-panel p-4 w-full md:w-56 border-purple-500/50">
+                <i class="fas fa-network-wired text-purple-400 text-xl md:text-2xl mb-2"></i>
+                <h4 class="font-bold text-white text-sm md:text-base">Python Gateway</h4>
+                <p class="text-[10px] md:text-xs font-mono text-gray-400">Middleware & WebSockets</p>
+            </div>
+
+            <svg class="absolute top-0 left-0 w-full h-full z-10 pointer-events-none" style="stroke: rgba(0, 240, 255, 0.3); stroke-width: 2; fill: none; stroke-dasharray: 4;">
+                <path d="M calc(50% - 128px) 50% L calc(50% - 150px) 50% L calc(50% - 150px) calc(10% + 50px) L 10% calc(10% + 50px)" class="animate-pulse"/>
+                <path d="M calc(50% - 128px) 50% L calc(50% - 150px) 50% L calc(50% - 150px) calc(90% - 50px) L 10% calc(90% - 50px)" class="animate-pulse"/>
+                <path d="M calc(50% + 128px) 50% L calc(50% + 150px) 50% L calc(50% + 150px) calc(10% + 50px) L 90% calc(10% + 50px)" class="animate-pulse"/>
+                <path d="M calc(50% + 128px) 50% L calc(50% + 150px) 50% L calc(50% + 150px) calc(90% - 50px) L 90% calc(90% - 50px)" class="animate-pulse"/>
+            </svg>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-4">
+        <h2 class="text-xl md:text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-6 md:mb-8 uppercase"><i class="fas fa-exchange-alt mr-3"></i>Train System Behavior</h2>
+        
+        <div class="scada-panel p-4 md:p-6 mb-6 md:mb-8 flex flex-col md:flex-row gap-4 md:gap-8">
+            <div class="flex-1">
+                <h3 class="text-base md:text-lg text-white border-b border-gray-700 pb-2 mb-4 font-mono">Operational Parameters</h3>
+                <ul class="text-xs md:text-sm text-cyan-100 font-mono space-y-2">
+                    <li><i class="fas fa-caret-right text-cyan-500 mr-2"></i>Two metro directions: <b>Forward</b> and <b>Return</b> routes.</li>
+                    <li><i class="fas fa-caret-right text-cyan-500 mr-2"></i>Four autonomous trains operating with Automatic terminal switching.</li>
+                    <li><i class="fas fa-caret-right text-cyan-500 mr-2"></i>Continuous telemetry streaming via I2C & UART.</li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="scada-panel p-4 md:p-8 mt-4 relative h-auto md:h-64 flex flex-col justify-center gap-10 md:gap-12 bg-black/50 border-gray-700 pb-10">
+            
+            <div class="relative w-full mt-6 md:mt-0">
+                <div class="absolute -top-6 left-2 text-[10px] font-mono font-bold text-cyan-400 tracking-wider">FORWARD LINE</div>
+                <div class="w-full h-1.5 bg-gray-800 relative mx-auto shadow-[0_0_10px_rgba(0,240,255,0.2)]">
+                    <div class="absolute top-1/2 left-[5%] transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-cyan-500 rounded-full node-pulse"></div>
+                    <div class="absolute top-1/2 left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gray-500 rounded-full"></div>
+                    <div class="absolute top-1/2 left-[90%] transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-cyan-500 rounded-full"></div>
+                    
+                    <div class="absolute top-4 left-[5%] transform -translate-x-1/2 text-[9px] font-mono text-gray-500">ST-01</div>
+                    <div class="absolute top-4 left-[90%] transform -translate-x-1/2 text-[9px] font-mono text-gray-500">ST-10</div>
+
+                    <div class="train-fwd w-10 md:w-14 h-5 md:h-7 bg-cyan-950 border border-cyan-400 rounded flex items-center justify-center shadow-[0_0_15px_rgba(0,240,255,0.6)]">
+                        <i class="fas fa-subway text-cyan-100 text-[10px] md:text-sm"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="relative w-full mt-8 md:mt-0">
+                <div class="absolute -top-6 left-2 text-[10px] font-mono font-bold text-orange-400 tracking-wider">RETURN LINE</div>
+                <div class="w-full h-1.5 bg-gray-800 relative mx-auto shadow-[0_0_10px_rgba(255,170,0,0.2)]">
+                    <div class="absolute top-1/2 left-[5%] transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-orange-500 rounded-full node-pulse"></div>
+                    <div class="absolute top-1/2 left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-2 h-2 bg-gray-500 rounded-full"></div>
+                    <div class="absolute top-1/2 left-[90%] transform -translate-x-1/2 -translate-y-1/2 w-3 h-3 bg-orange-500 rounded-full"></div>
+                    
+                    <div class="absolute top-4 left-[5%] transform -translate-x-1/2 text-[9px] font-mono text-gray-500">ST-01</div>
+                    <div class="absolute top-4 left-[90%] transform -translate-x-1/2 text-[9px] font-mono text-gray-500">ST-10</div>
+
+                    <div class="train-ret w-10 md:w-14 h-5 md:h-7 bg-orange-950 border border-orange-400 rounded flex items-center justify-center shadow-[0_0_15px_rgba(255,170,0,0.6)]">
+                        <i class="fas fa-train-tram text-orange-100 text-[10px] md:text-sm"></i>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="slide" id="slide-5">
+        <h2 class="text-xl md:text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-6 md:mb-8 uppercase"><i class="fas fa-layer-group mr-3"></i>RTOS Task Design</h2>
+        
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 h-auto md:h-full pb-20 md:pb-0">
+            <div class="scada-panel p-4 md:p-5 border-t-4 border-cyan-500">
+                <h3 class="text-center font-bold text-cyan-300 mb-4 bg-cyan-900/30 py-2 text-sm md:text-base">CENTRAL ECU TASKS</h3>
+                <div class="space-y-2 md:space-y-3 font-mono text-xs md:text-sm">
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-red-500 flex justify-between"><span>Svc_Safe (Collision)</span> <span class="text-red-400">P1</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-orange-500 flex justify-between"><span>App_Super (Coord)</span> <span class="text-orange-400">P2</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-yellow-500 flex justify-between"><span>RTOS_Tasks (Sched)</span> <span class="text-yellow-400">P3</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-blue-500 flex justify-between"><span>MCAL_I2C (Bus)</span> <span class="text-blue-400">P4</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-gray-500 flex justify-between"><span>Svc_Comm (UART Sync)</span> <span class="text-gray-400">P5</span></div>
+                </div>
+            </div>
+
+            <div class="scada-panel p-4 md:p-5 border-t-4 border-orange-500">
+                <h3 class="text-center font-bold text-orange-300 mb-4 bg-orange-900/30 py-2 text-sm md:text-base">TRAIN ECU TASKS</h3>
+                <div class="space-y-2 md:space-y-3 font-mono text-xs md:text-sm">
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-red-500 flex justify-between"><span>Svc_Safe (E-Stop)</span> <span class="text-red-400">P1</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-orange-500 flex justify-between"><span>App_FSM (Auto Move)</span> <span class="text-orange-400">P2</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-yellow-500 flex justify-between"><span>MCAL_PWM (Motor)</span> <span class="text-yellow-400">P3</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-blue-500 flex justify-between"><span>Svc_Comm (Link)</span> <span class="text-blue-400">P4</span></div>
+                </div>
+            </div>
+
+            <div class="scada-panel p-4 md:p-5 border-t-4 border-green-500">
+                <h3 class="text-center font-bold text-green-300 mb-4 bg-green-900/30 py-2 text-sm md:text-base">STATION ECU TASKS</h3>
+                <div class="space-y-2 md:space-y-3 font-mono text-xs md:text-sm">
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-orange-500 flex justify-between"><span>HAL_Sens (IR Poll)</span> <span class="text-orange-400">P1</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-blue-500 flex justify-between"><span>Svc_Comm (Event TX)</span> <span class="text-blue-400">P2</span></div>
+                    <div class="bg-gray-800/80 p-2 border-l-2 border-gray-500 flex justify-between text-gray-500"><span>HMI (Indicators)</span> <span class="text-gray-500">P3</span></div>
+                </div>
+                <div class="mt-6 md:mt-8 text-[10px] md:text-xs text-gray-400 font-mono text-center">
+                    <i class="fas fa-info-circle text-cyan-500 mr-1"></i> Preemptive priority-based scheduling implemented.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-6">
+        <h2 class="text-xl md:text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-6 md:mb-8 uppercase"><i class="fas fa-microchip mr-3"></i>Communication Architecture</h2>
+        
+        <div class="flex flex-col gap-4 md:gap-6 font-mono w-full max-w-4xl mx-auto pb-20 md:pb-0">
+            
+            <div class="scada-panel p-4 flex flex-col items-center bg-gray-900/40 border-yellow-600/30">
+                <div class="w-full flex flex-col md:flex-row justify-between px-2 md:px-10 mb-2 gap-2 text-center">
+                    <span class="text-yellow-400 text-[10px] md:text-xs font-bold">I2C Bus (Inter-ECU Synchronization)</span>
+                    <span class="text-blue-400 text-[10px] md:text-xs font-bold">UART (To Python Gateway)</span>
+                </div>
+                <div class="w-full h-1 bg-yellow-500/50 mb-2 relative"><div class="absolute w-4 h-4 bg-yellow-400 rounded-full -top-1.5 left-1/4 animate-pulse"></div></div>
+                <div class="w-full h-1 bg-blue-500/50 relative"><div class="absolute w-4 h-4 bg-blue-400 rounded-full -top-1.5 left-1/4 animate-pulse"></div></div>
+            </div>
+
+            <div class="scada-panel p-4 flex flex-col md:flex-row items-center gap-4 md:gap-0">
+                <div class="w-full md:w-1/4 text-center text-green-400"><i class="fas fa-building text-2xl md:text-3xl mb-1 md:mb-2 block"></i>Station Node<br><span class="text-[9px] md:text-[10px] text-gray-500">I2C Slave (0x30)</span></div>
+                <div class="w-full md:w-2/4 flex flex-col items-center justify-center relative">
+                    <div class="text-[8px] md:text-[10px] text-cyan-300 mb-1 bg-gray-900 px-2 z-10 font-bold border border-gray-700 rounded text-center">[S] + [0x10|W] + [ARR_EVENT] + [P]</div>
+                    <div class="w-full h-0.5 bg-gray-700 relative hidden md:block">
+                        <div class="absolute w-2 h-2 bg-green-500 rounded-full top-[-3px] left-0 animate-[moveRight_2s_linear_infinite]"></div>
+                    </div>
+                    <i class="fas fa-arrow-down text-gray-600 block md:hidden mt-2"></i>
+                </div>
+                <div class="w-full md:w-1/4 text-center text-cyan-400"><i class="fas fa-server text-2xl md:text-3xl mb-1 md:mb-2 block"></i>Central ECU<br><span class="text-[9px] md:text-[10px] text-gray-500">I2C Master (0x10)</span></div>
+            </div>
+
+            <div class="scada-panel p-4 flex flex-col md:flex-row items-center bg-gray-900/50 gap-4 md:gap-0">
+                <div class="w-full md:w-1/4 text-center text-cyan-400"><i class="fas fa-server text-2xl md:text-3xl mb-1 md:mb-2 block"></i>Central ECU<br><span class="text-[9px] md:text-[10px] text-gray-500">I2C Master (0x10)</span></div>
+                <div class="w-full md:w-2/4 flex flex-col items-center justify-center relative">
+                    <div class="text-[8px] md:text-[10px] text-orange-300 mb-1 bg-gray-900 px-2 z-10 font-bold border border-gray-700 rounded text-center">[S] + [0x21|W] + [CMD_MOVE] + [P]</div>
+                    <div class="w-full h-0.5 bg-gray-700 relative hidden md:block">
+                        <div class="absolute w-2 h-2 bg-cyan-500 rounded-full top-[-3px] left-0 animate-[moveRight_1.5s_linear_infinite]"></div>
+                    </div>
+                     <i class="fas fa-arrow-down text-gray-600 block md:hidden mt-2"></i>
+                </div>
+                <div class="w-full md:w-1/4 text-center text-orange-400"><i class="fas fa-train text-2xl md:text-3xl mb-1 md:mb-2 block"></i>Train Node<br><span class="text-[9px] md:text-[10px] text-gray-500">I2C Slave (0x21)</span></div>
+            </div>
+
+        </div>
+        <style>@keyframes moveRight { 0% { left: 0%; opacity: 1; } 90% { opacity: 1; } 100% { left: 100%; opacity: 0; } }</style>
+    </div>
+
+    <div class="slide" id="slide-7">
+        <h2 class="text-xl md:text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-6 md:mb-8 uppercase"><i class="fas fa-compress-arrows-alt mr-3"></i>Hybrid Movement Model</h2>
+        
+        <div class="flex flex-col md:flex-row gap-6 h-auto md:h-[60vh] pb-20 md:pb-0">
+            <div class="w-full md:w-1/2 scada-panel p-4 md:p-6 flex flex-col">
+                <h3 class="text-lg md:text-xl font-bold text-gray-300 border-b border-gray-700 pb-2 mb-2 md:mb-4 font-mono">1. Embedded Logic (Discrete)</h3>
+                <p class="text-[10px] md:text-sm text-gray-400 mb-4 font-mono">System state changes instantly based on hardware sensor interrupts.</p>
+                
+                <div class="flex-1 bg-black rounded border border-gray-800 p-4 font-mono text-[10px] md:text-xs overflow-hidden relative min-h-[200px]">
+                    <div class="absolute top-2 right-2 text-[8px] md:text-[10px] text-green-500 animate-pulse">I2C_RX_ACTIVE</div>
+                    <div class="text-cyan-600">> INIT SYSTEM... OK</div>
+                    <div class="text-cyan-600">> AWAITING SENSOR INPUT...</div>
+                    <div class="text-green-400 mt-2">[T=12:00:01] EVENT_RX: ST_02_DEP (Train 1)</div>
+                    <div class="text-gray-500">&nbsp; => Calc Next: ST_03</div>
+                    <div class="text-gray-500">&nbsp; => State: IN_TRANSIT</div>
+                    <div class="text-green-400 mt-2">[T=12:01:45] EVENT_RX: ST_03_ARR (Train 1)</div>
+                    <div class="text-gray-500">&nbsp; => State: DOCKED</div>
+                    <div class="text-orange-400 mt-2">[T=12:01:46] TX_CMD: DOOR_OPEN</div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 scada-panel p-4 md:p-6 flex flex-col bg-cyan-900/10 border-cyan-500/30">
+                <h3 class="text-lg md:text-xl font-bold text-cyan-300 border-b border-cyan-800 pb-2 mb-2 md:mb-4 font-mono">2. Dashboard Interpolation</h3>
+                <p class="text-[10px] md:text-sm text-cyan-200/70 mb-4 font-mono">SCADA UI interpolates smooth animations between discrete embedded events.</p>
+                
+                <div class="flex-1 border border-cyan-800/50 bg-[#02050a] relative flex items-center justify-center p-4 md:p-8 min-h-[150px]">
+                    <div class="w-full h-1 bg-cyan-900 relative">
+                        <div class="absolute left-0 top-[-8px] w-3 h-3 md:w-4 md:h-4 rounded-full border-2 border-cyan-500 bg-black"></div>
+                        <div class="absolute right-0 top-[-8px] w-3 h-3 md:w-4 md:h-4 rounded-full border-2 border-cyan-500 bg-black"></div>
+                        <span class="absolute left-0 -top-6 text-[10px] md:text-xs font-mono text-gray-500">ST_02</span>
+                        <span class="absolute right-0 -top-6 text-[10px] md:text-xs font-mono text-gray-500">ST_03</span>
+                        
+                        <div class="absolute top-[-10px] md:top-[-12px] left-[10%] w-5 h-5 md:w-6 md:h-6 bg-cyan-400 rounded flex items-center justify-center shadow-[0_0_15px_#00f0ff] animate-[smoothTransit_4s_ease-in-out_infinite]">
+                            <i class="fas fa-subway text-black text-[8px] md:text-[10px]"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <style>@keyframes smoothTransit { 0% { left: 0%; } 10% { left: 0%; } 90% { left: calc(100% - 24px); } 100% { left: calc(100% - 24px); } }</style>
+    </div>
+
+    <div class="slide p-0" id="slide-8">
+        <div class="w-full min-h-screen md:h-full bg-[#03070d] flex flex-col p-2 md:p-4 border-4 border-gray-900 relative">
+            <div class="scanlines opacity-20"></div>
+            
+            <div class="flex flex-col md:flex-row justify-between items-center border-b border-cyan-800 pb-2 mb-4 gap-2 md:gap-0 mt-4 md:mt-0">
+                <div class="text-cyan-400 font-mono text-lg md:text-2xl tracking-widest glow-blue font-bold">
+                    <i class="fas fa-desktop mr-2"></i>SCADA CENTRAL
+                </div>
+                <div class="flex gap-2 md:gap-4 font-mono text-[9px] md:text-xs">
+                    <div class="bg-gray-800 px-2 md:px-3 py-1 rounded text-green-400 border border-green-900"><i class="fas fa-circle mr-2 text-[6px] md:text-[8px] animate-pulse"></i>LINK UP (I2C/UART)</div>
+                    <div class="bg-gray-800 px-2 md:px-3 py-1 rounded text-cyan-400 border border-cyan-900" id="scada-clock">00:00:00 SYS_TIME</div>
+                </div>
+            </div>
+
+            <div class="flex-1 flex flex-col md:flex-row gap-4">
+                
+                <div class="w-full md:w-3/4 scada-panel border-cyan-900/50 flex flex-col relative p-2 md:p-6 bg-gradient-to-b from-[#0a1120] to-[#040810]" id="scada-map-container">
+                    <div class="absolute top-2 left-2 text-[10px] md:text-xs font-mono text-cyan-600 z-10">LIVE METRO TOPOLOGY</div>
+                    
+                    <div class="flex-1 relative mt-8" id="scada-map-inner">
+                        <svg width="100%" height="100%" class="absolute top-0 left-0 min-w-[800px]">
+                            <path d="M 50 120 L 250 120 L 350 220 L 700 220" fill="none" stroke="#00f0ff" stroke-width="4" stroke-opacity="0.5" class="glow-blue"/>
+                            <path d="M 50 150 L 250 150 L 350 250 L 700 250" fill="none" stroke="#ffaa00" stroke-width="4" stroke-opacity="0.5" class="glow-orange"/>
+                        </svg>
+
+                        <div class="absolute top-[120px] left-[42px] w-4 h-[34px] bg-black border-2 border-gray-400 rounded-sm shadow-[0_0_5px_#fff]"></div>
+                        <span class="absolute top-[165px] left-[35px] text-[10px] font-mono text-gray-400">ST-01</span>
+                        
+                        <div class="absolute top-[120px] left-[142px] w-4 h-[34px] bg-black border-2 border-gray-400 rounded-sm shadow-[0_0_5px_#fff]"></div>
+                        <span class="absolute top-[165px] left-[135px] text-[10px] font-mono text-gray-400">ST-02</span>
+
+                        <div class="absolute top-[120px] left-[242px] w-4 h-[34px] bg-black border-2 border-gray-400 rounded-sm shadow-[0_0_5px_#fff]"></div>
+                        <span class="absolute top-[105px] left-[235px] text-[10px] font-mono text-gray-400">ST-03</span>
+
+                        <div class="absolute top-[220px] left-[342px] w-4 h-[34px] bg-black border-2 border-gray-400 rounded-sm shadow-[0_0_5px_#fff]"></div>
+                        <span class="absolute top-[265px] left-[335px] text-[10px] font-mono text-gray-400">ST-04</span>
+
+                        <div class="absolute top-[220px] left-[542px] w-4 h-[34px] bg-black border-2 border-gray-400 rounded-sm shadow-[0_0_5px_#fff]"></div>
+                        <span class="absolute top-[265px] left-[535px] text-[10px] font-mono text-gray-400">ST-05</span>
+
+                        <div class="absolute top-[220px] left-[692px] w-4 h-[34px] bg-black border-2 border-gray-400 rounded-sm shadow-[0_0_5px_#fff]"></div>
+                        <span class="absolute top-[265px] left-[685px] text-[10px] font-mono text-gray-400">ST-06</span>
+
+                        <div id="tr-1" class="absolute bg-cyan-900 border border-cyan-400 w-8 h-5 rounded flex items-center justify-center shadow-[0_0_10px_#00f0ff] transform -translate-x-1/2 -translate-y-1/2 z-10 transition-colors duration-200">
+                            <span class="text-[8px] font-bold text-cyan-100">TR-1</span>
+                        </div>
+                        <div id="tr-2" class="absolute bg-cyan-900 border border-cyan-400 w-8 h-5 rounded flex items-center justify-center shadow-[0_0_10px_#00f0ff] transform -translate-x-1/2 -translate-y-1/2 z-10 transition-colors duration-200">
+                            <span class="text-[8px] font-bold text-cyan-100">TR-2</span>
+                        </div>
+                        <div id="tr-3" class="absolute bg-orange-900 border border-orange-400 w-8 h-5 rounded flex items-center justify-center shadow-[0_0_10px_#ffaa00] transform -translate-x-1/2 -translate-y-1/2 z-10 transition-colors duration-200">
+                            <span class="text-[8px] font-bold text-orange-100">TR-3</span>
+                        </div>
+                        <div id="tr-4" class="absolute bg-orange-900 border border-orange-400 w-8 h-5 rounded flex items-center justify-center shadow-[0_0_10px_#ffaa00] transform -translate-x-1/2 -translate-y-1/2 z-10 transition-colors duration-200">
+                            <span class="text-[8px] font-bold text-orange-100">TR-4</span>
+                        </div>
+                        
+                        <div class="absolute top-[100px] left-[220px] flex gap-[2px]">
+                            <div class="w-2 h-2 rounded-full bg-red-600 shadow-[0_0_5px_red]"></div>
+                            <div class="w-2 h-2 rounded-full bg-gray-800"></div>
+                        </div>
+                        <div class="absolute top-[265px] left-[650px] flex gap-[2px]">
+                            <div class="w-2 h-2 rounded-full bg-gray-800"></div>
+                            <div class="w-2 h-2 rounded-full bg-green-500 shadow-[0_0_5px_lime]"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full md:w-1/4 flex flex-col gap-4 pb-20 md:pb-0">
+                    
+                    <div class="scada-panel p-3 md:p-4 border-cyan-500 mb-1 flex-none">
+                        <div class="text-[10px] font-mono text-cyan-300 mb-2 border-b border-cyan-900 pb-1"><i class="fas fa-train mr-1"></i>FLEET LIVE STATUS</div>
+                        <div id="fleet-status" class="space-y-1 font-mono text-[9px] md:text-[10px]">
+                            <div id="status-TR-1" class="flex justify-between items-center bg-[#070d17] p-1.5 rounded border border-gray-800"></div>
+                            <div id="status-TR-2" class="flex justify-between items-center bg-[#070d17] p-1.5 rounded border border-gray-800"></div>
+                            <div id="status-TR-3" class="flex justify-between items-center bg-[#070d17] p-1.5 rounded border border-gray-800"></div>
+                            <div id="status-TR-4" class="flex justify-between items-center bg-[#070d17] p-1.5 rounded border border-gray-800"></div>
+                        </div>
+                    </div>
+
+                    <div class="scada-panel p-3 md:p-4 border-green-900 flex-none">
+                        <div class="text-[10px] font-mono text-green-400 mb-2 border-b border-green-900 pb-1"><i class="fas fa-server mr-1"></i>SYS HEALTH</div>
+                        <div class="flex justify-between text-[9px] md:text-[10px] font-mono text-gray-400 mb-1">
+                            <span>CPU LOAD</span><span id="scada-cpu" class="text-white">0%</span>
+                        </div>
+                        <div class="w-full h-1 bg-gray-800 mb-3"><div class="h-full bg-green-500 w-0 transition-all duration-300"></div></div>
+                        
+                        <div class="flex justify-between text-[9px] md:text-[10px] font-mono text-gray-400 mb-1">
+                            <span>NET PING</span><span id="scada-ping" class="text-white">0ms</span>
+                        </div>
+                        <div class="w-full h-1 bg-gray-800"><div class="h-full bg-blue-500 w-0 transition-all duration-300"></div></div>
+                    </div>
+
+                    <div class="scada-panel flex-1 p-3 md:p-4 flex flex-col border-cyan-900 min-h-[120px]">
+                        <div class="text-[10px] md:text-xs font-mono text-gray-400 mb-2 border-b border-gray-800 pb-1">REAL-TIME LOGS</div>
+                        <div class="flex-1 bg-black rounded p-2 overflow-hidden font-mono text-[8px] md:text-[10px] space-y-1" id="scada-logs">
+                            <div class="text-green-400">> SYS_INIT_OK</div>
+                            <div class="text-cyan-400">> TR-1 DEPART ST-01</div>
+                            <div class="text-cyan-400">> TR-2 ARRIVE ST-04</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="fixed top-2 md:top-4 right-2 md:right-4 bg-gray-800 border border-gray-600 text-[10px] md:text-xs px-2 py-1 font-mono text-white rounded hover:bg-gray-700 z-[100]" onclick="nextSlide()">EXIT SCADA <i class="fas fa-times"></i></button>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-9">
+        <h2 class="text-xl md:text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-6 md:mb-8 uppercase"><i class="fas fa-network-wired mr-3"></i>Backend Middleware</h2>
+        
+        <div class="flex flex-col md:flex-row justify-center items-center h-auto md:h-full gap-8 md:gap-16 pb-20 md:pb-0">
+            <div class="w-full md:w-1/3 scada-panel p-4 md:p-6">
+                <h3 class="text-base md:text-lg font-bold text-purple-400 mb-4 font-mono"><i class="fas fa-cogs mr-2"></i>Python Gateway</h3>
+                <ul class="text-xs md:text-sm font-mono text-gray-300 space-y-4">
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>UART to WebSockets Translation</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Lightweight API State Sync</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Event Logging & Data Aggregation</li>
+                    <li><i class="fas fa-check text-green-500 mr-2"></i>Supervisory Command Dispatch</li>
+                </ul>
+            </div>
+
+            <div class="w-full md:w-[400px] h-[300px] md:h-[500px] border-4 border-gray-700 rounded-lg bg-[#0f172a] relative shadow-[0_0_30px_rgba(0,0,0,0.5)] overflow-hidden flex flex-col">
+                <div class="flex items-center px-4 py-2 bg-gray-800 border-b border-gray-700">
+                    <div class="flex gap-2">
+                        <div class="w-3 h-3 rounded-full bg-red-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-yellow-500"></div>
+                        <div class="w-3 h-3 rounded-full bg-green-500"></div>
+                    </div>
+                    <span class="ml-4 text-[10px] md:text-xs font-mono text-gray-400">gateway_server.py</span>
+                </div>
+                
+                <div class="flex-1 bg-gray-900 p-2 md:p-4 font-mono text-[9px] md:text-xs text-green-400 overflow-y-auto space-y-1 md:space-y-2 leading-relaxed">
+                    <div>[INFO] Bootstrapping Backend Middleware...</div>
+                    <div>[INFO] Establishing UART connection to C-ECU... <span class="text-green-300">OK</span></div>
+                    <div>[INFO] WebSocket server running on ws://0.0.0.0:8080</div>
+                    <div class="text-cyan-400">[SYNC] Initial topology snapshot requested...</div>
+                    <div class="text-cyan-400">[SYNC] Discovered 4 T-ECUs, 10 S-ECUs.</div>
+                    <br>
+                    <div>[EVENT] RX: TR-1 departed ST-02</div>
+                    <div>[EVENT] TX: Broadcast status to 3 clients</div>
+                    <div class="text-yellow-400">[WARN] ST-08 heartbeat missed. Retrying (1/3)...</div>
+                    <div class="text-yellow-400">[WARN] ST-08 heartbeat missed. Retrying (2/3)...</div>
+                    <div class="text-red-500">[ALERT] ST-08 Unresponsive. Setting BYPASS_MODE.</div>
+                    <div>[EVENT] RX: TR-3 arrived ST-05</div>
+                    <div class="text-blue-400">[CMD] Dispatch: HOLD TR-3 via Supervisory Override</div>
+                    <span class="animate-pulse">_</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-10">
+        <h2 class="text-lg md:text-3xl font-bold text-red-500 glow-red border-b border-red-900 pb-2 mb-6 md:mb-8 uppercase flex items-center">
+            <i class="fas fa-radiation mr-3 text-xl md:text-3xl"></i> Scenario 1: Collision Risk
+        </h2>
+        
+        <div class="flex flex-col md:flex-row gap-6 md:gap-8 h-auto md:h-full pb-20 md:pb-0">
+            <div class="w-full md:w-1/2 scada-panel bg-[#02050a] flex flex-col items-center justify-center relative p-4 md:p-8 border-red-900/50 min-h-[250px]">
+                <div class="absolute top-2 md:top-4 left-2 md:left-4 text-[10px] md:text-xs font-mono text-red-500 animate-pulse"><i class="fas fa-exclamation-circle mr-1"></i>LIVE SIMULATION</div>
+                
+                <div class="w-full h-3 bg-gray-800 relative mt-8 md:mt-12 rounded">
+                    
+                    <div class="absolute top-1/2 left-[55%] transform -translate-y-1/2 w-[35%] h-10 md:h-12 border-2 rounded anim-s1-zone z-0 pointer-events-none"></div>
+
+                    <div class="absolute top-1/2 left-[80%] transform -translate-y-1/2 w-12 md:w-16 h-6 md:h-8 bg-gray-900 border border-gray-500 rounded flex items-center justify-center text-[8px] md:text-xs font-bold font-mono text-gray-300 z-10 shadow-lg">TR-1</div>
+                    
+                    <div class="absolute top-1/2 transform -translate-y-1/2 w-12 md:w-16 h-6 md:h-8 bg-[#0a192f] border-2 rounded flex items-center justify-center text-[8px] md:text-xs font-bold font-mono text-white anim-s1-train z-20 shadow-lg">TR-2</div>
+                </div>
+
+                <div class="absolute top-1/3 left-1/2 anim-s1-text font-bold font-mono text-red-500 bg-[#2a0808] border-2 border-red-500 px-4 md:px-6 py-1 md:py-2 rounded-lg shadow-[0_0_20px_rgba(255,0,0,0.6)] z-30 flex flex-col items-center">
+                    <span class="text-sm md:text-xl">SAFETY LOOP (P1)</span>
+                    <span class="text-[8px] md:text-xs text-white">E-STOP BROADCAST</span>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 flex flex-col gap-3 md:gap-4 justify-center">
+                <h3 class="text-base md:text-xl font-bold text-gray-300 font-mono mb-2 md:mb-4">RTOS Response Sequence</h3>
+                
+                <div class="scada-panel p-3 md:p-5 border-l-4 border-gray-700 step-1 flex items-center bg-[#070d17]">
+                    <div class="w-6 md:w-8 h-6 md:h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-3 md:mr-4 text-cyan-400 text-xs md:text-base">1</div>
+                    <div class="font-mono text-xs md:text-sm">Station sensor detects Train 2 entering an occupied sector.</div>
+                </div>
+                
+                <div class="scada-panel p-3 md:p-5 border-l-4 border-gray-700 step-2 flex items-center bg-[#070d17]">
+                    <div class="w-6 md:w-8 h-6 md:h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-3 md:mr-4 text-red-400 text-xs md:text-base">2</div>
+                    <div class="font-mono text-xs md:text-sm flex flex-col gap-1">
+                        <span>High Priority Safety Task triggered!</span>
+                        <span class="text-red-400 text-[10px] md:text-xs">Svc_Safe (P1) preempts the normal Scheduler.</span>
+                    </div>
+                </div>
+
+                <div class="scada-panel p-3 md:p-5 border-l-4 border-gray-700 step-3 flex items-center bg-[#070d17]">
+                    <div class="w-6 md:w-8 h-6 md:h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-3 md:mr-4 text-orange-400 text-xs md:text-base">3</div>
+                    <div class="font-mono text-xs md:text-sm">Central ECU broadcasts E-STOP via I2C. Sector locks instantly.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-11">
+        <h2 class="text-lg md:text-3xl font-bold text-orange-500 glow-orange border-b border-orange-900 pb-2 mb-6 md:mb-8 uppercase flex items-center">
+            <i class="fas fa-unlink mr-3 text-xl md:text-3xl"></i> Scenario 2: Train Comm Loss
+        </h2>
+        
+        <div class="flex flex-col md:flex-row gap-6 md:gap-8 h-auto md:h-full pb-20 md:pb-0">
+            <div class="w-full md:w-1/2 scada-panel bg-[#02050a] flex flex-col items-center justify-center relative p-4 md:p-8 border-orange-900/50 min-h-[250px]">
+                <div class="absolute top-2 md:top-4 left-2 md:left-4 text-[10px] md:text-xs font-mono text-orange-500 animate-pulse"><i class="fas fa-exclamation-circle mr-1"></i>LIVE SIMULATION</div>
+                
+                <div class="w-full flex justify-between items-center relative h-32 px-4 md:px-12 mt-4 md:mt-0">
+                    <div class="w-16 md:w-20 h-16 md:h-20 bg-[#0a192f] border-2 border-cyan-500 rounded flex flex-col items-center justify-center z-10 shadow-[0_0_15px_#00f0ff]">
+                        <i class="fas fa-server text-cyan-400 text-xl md:text-2xl mb-1"></i>
+                        <span class="text-[7px] md:text-[9px] font-mono text-cyan-300">Central ECU</span>
+                    </div>
+
+                    <div class="h-1 bg-cyan-400 absolute left-[25%] anim-s2-signal z-0"></div>
+
+                    <div class="absolute left-1/2 transform -translate-x-1/2 text-3xl md:text-5xl text-red-500 anim-s2-x z-20">
+                        <i class="fas fa-times-circle bg-[#02050a] rounded-full shadow-[0_0_20px_red]"></i>
+                    </div>
+
+                    <div class="w-16 md:w-24 h-12 md:h-16 bg-[#0a192f] border-2 rounded flex flex-col items-center justify-center z-10 anim-s2-train relative">
+                        <i class="fas fa-train text-white text-base md:text-xl mb-1"></i>
+                        <span class="text-[7px] md:text-[9px] font-mono text-gray-300">Train ECU</span>
+                        
+                        <div class="absolute -top-8 md:-top-10 bg-black border border-gray-700 px-2 md:px-3 py-1 text-[9px] md:text-xs font-mono rounded font-bold anim-s2-timer whitespace-nowrap shadow-lg"></div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 flex flex-col gap-3 md:gap-4 justify-center">
+                <h3 class="text-base md:text-xl font-bold text-gray-300 font-mono mb-2 md:mb-4">Local Safety Fallback</h3>
+                
+                <div class="scada-panel p-3 md:p-5 border-l-4 border-gray-700 step-1 flex items-center bg-[#070d17]">
+                    <div class="w-6 md:w-8 h-6 md:h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-3 md:mr-4 text-cyan-400 text-xs md:text-base">1</div>
+                    <div class="font-mono text-xs md:text-sm">Train ECU expects continuous I2C polling heartbeat.</div>
+                </div>
+                
+                <div class="scada-panel p-3 md:p-5 border-l-4 border-gray-700 step-2 flex items-center bg-[#070d17]">
+                    <div class="w-6 md:w-8 h-6 md:h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-3 md:mr-4 text-orange-400 text-xs md:text-base">2</div>
+                    <div class="font-mono text-xs md:text-sm flex flex-col gap-1">
+                        <span>I2C Bus Connection Fails.</span>
+                        <span class="text-orange-400 text-[10px] md:text-xs">Local Watchdog Timer begins countdown (500ms limit).</span>
+                    </div>
+                </div>
+
+                <div class="scada-panel p-3 md:p-5 border-l-4 border-gray-700 step-3 flex items-center bg-[#070d17]">
+                    <div class="w-6 md:w-8 h-6 md:h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-3 md:mr-4 text-red-400 text-xs md:text-base">3</div>
+                    <div class="font-mono text-xs md:text-sm">Timeout Exceeded. Train engages local fail-safe auto-brakes independently.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-12">
+        <h2 class="text-lg md:text-3xl font-bold text-yellow-500 glow-orange border-b border-yellow-900 pb-2 mb-6 md:mb-8 uppercase flex items-center">
+            <i class="fas fa-eye-slash mr-3 text-xl md:text-3xl"></i> Scenario 3: Graceful Degradation
+        </h2>
+        
+        <div class="flex flex-col md:flex-row gap-6 md:gap-8 h-auto md:h-full pb-20 md:pb-0">
+            <div class="w-full md:w-1/2 scada-panel bg-[#02050a] flex flex-col items-center justify-center relative p-4 md:p-8 border-yellow-900/50 min-h-[250px]">
+                <div class="absolute top-2 md:top-4 left-2 md:left-4 text-[10px] md:text-xs font-mono text-yellow-500 animate-pulse"><i class="fas fa-exclamation-circle mr-1"></i>LIVE SIMULATION</div>
+                
+                <div class="w-full border-2 rounded p-4 md:p-8 anim-s3-track relative z-10 bg-[#050b14] mt-6 md:mt-0">
+                    
+                    <div class="w-full h-1 bg-gray-600 relative">
+                        <div class="absolute top-1/2 left-[10%] transform -translate-x-1/2 -translate-y-1/2 w-3 md:w-4 h-3 md:h-4 rounded-full bg-green-500 shadow-[0_0_10px_lime]"></div>
+                        <span class="absolute top-4 left-[10%] transform -translate-x-1/2 text-[8px] md:text-[10px] font-mono text-gray-400">ST-A</span>
+
+                        <div class="absolute top-1/2 left-[50%] transform -translate-x-1/2 -translate-y-1/2 w-3 md:w-4 h-3 md:h-4 rounded-full bg-gray-800 border-2 border-red-500 flex items-center justify-center">
+                            <i class="fas fa-times text-[6px] md:text-[8px] text-red-500"></i>
+                        </div>
+                        <span class="absolute top-4 left-[50%] transform -translate-x-1/2 text-[8px] md:text-[10px] font-mono text-red-400">ST-B (OFFLINE)</span>
+
+                        <div class="absolute top-1/2 left-[90%] transform -translate-x-1/2 -translate-y-1/2 w-3 md:w-4 h-3 md:h-4 rounded-full bg-gray-600"></div>
+                        <span class="absolute top-4 left-[90%] transform -translate-x-1/2 text-[8px] md:text-[10px] font-mono text-gray-400">ST-C</span>
+
+                        <div class="absolute top-1/2 transform -translate-y-1/2 w-8 md:w-12 h-4 md:h-6 bg-cyan-900 border border-cyan-400 rounded flex items-center justify-center text-[8px] md:text-[10px] font-bold text-white anim-s3-train z-20">TR-1</div>
+                    </div>
+                </div>
+
+                <div class="w-3/4 mt-8 md:mt-12 bg-gray-900 border border-gray-700 h-3 md:h-4 rounded overflow-hidden relative">
+                    <div class="absolute top-0 left-0 h-full anim-s3-bar"></div>
+                    <span class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-[7px] md:text-[9px] font-mono text-white z-10 drop-shadow-md whitespace-nowrap">HEARTBEAT MONITOR</span>
+                </div>
+            </div>
+
+            <div class="w-full md:w-1/2 flex flex-col gap-3 md:gap-4 justify-center">
+                <h3 class="text-base md:text-xl font-bold text-gray-300 font-mono mb-2 md:mb-4">Station Bypass Sequence</h3>
+                
+                <div class="scada-panel p-3 md:p-5 border-l-4 border-gray-700 step-s3-1 flex items-center bg-[#070d17]">
+                    <div class="w-6 md:w-8 h-6 md:h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-3 md:mr-4 text-cyan-400 text-xs md:text-base">1</div>
+                    <div class="font-mono text-xs md:text-sm">Central ECU polls active nodes. Train departs ST-A normally.</div>
+                </div>
+                
+                <div class="scada-panel p-3 md:p-5 border-l-4 border-gray-700 step-s3-2 flex items-center bg-[#070d17]">
+                    <div class="w-6 md:w-8 h-6 md:h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-3 md:mr-4 text-yellow-400 text-xs md:text-base">2</div>
+                    <div class="font-mono text-xs md:text-sm flex flex-col gap-1">
+                        <span>Station ECU B misses heartbeat responses.</span>
+                        <span class="text-yellow-400 text-[10px] md:text-xs">Central ECU marks ST-B as offline.</span>
+                    </div>
+                </div>
+
+                <div class="scada-panel p-3 md:p-5 border-l-4 border-gray-700 step-s3-3 flex items-center bg-[#070d17]">
+                    <div class="w-6 md:w-8 h-6 md:h-8 rounded-full bg-gray-800 flex items-center justify-center font-bold mr-3 md:mr-4 text-red-400 text-xs md:text-base">3</div>
+                    <div class="font-mono text-xs md:text-sm">Station Bypass Flag activated. Trains skip ST-B gracefully without stopping.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-13">
+        <h2 class="text-xl md:text-3xl font-bold text-cyan-400 glow-blue border-b border-cyan-900 pb-2 mb-6 md:mb-8 uppercase"><i class="fas fa-microchip mr-3"></i>Proteus Hardware Simulation</h2>
+        
+        <div class="flex flex-col md:flex-row gap-6 md:gap-8 items-center h-auto md:h-full pb-20 md:pb-0">
+            <div class="w-full md:w-1/2">
+                <ul class="space-y-4 md:space-y-6">
+                    <li class="scada-panel p-3 md:p-4 flex items-center bg-gray-900">
+                        <div class="w-10 md:w-12 h-10 md:h-12 bg-cyan-900/50 rounded flex items-center justify-center border border-cyan-500 mr-3 md:mr-4 flex-shrink-0">
+                            <i class="fas fa-memory text-xl md:text-2xl text-cyan-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white font-mono text-sm md:text-base">ATmega128 Core</h4>
+                            <p class="text-[10px] md:text-xs text-gray-400">16MHz, handling FreeRTOS tasks & interrupts.</p>
+                        </div>
+                    </li>
+                    <li class="scada-panel p-3 md:p-4 flex items-center bg-gray-900">
+                        <div class="w-10 md:w-12 h-10 md:h-12 bg-orange-900/50 rounded flex items-center justify-center border border-orange-500 mr-3 md:mr-4 flex-shrink-0">
+                            <i class="fas fa-cogs text-xl md:text-2xl text-orange-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white font-mono text-sm md:text-base">DC Motors & L298N</h4>
+                            <p class="text-[10px] md:text-xs text-gray-400">PWM driven movement simulation for Trains.</p>
+                        </div>
+                    </li>
+                    <li class="scada-panel p-3 md:p-4 flex items-center bg-gray-900">
+                        <div class="w-10 md:w-12 h-10 md:h-12 bg-green-900/50 rounded flex items-center justify-center border border-green-500 mr-3 md:mr-4 flex-shrink-0">
+                            <i class="fas fa-wave-square text-xl md:text-2xl text-green-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white font-mono text-sm md:text-base">IR / Occupancy Sensors</h4>
+                            <p class="text-[10px] md:text-xs text-gray-400">Simulated logic inputs (buttons) for stations.</p>
+                        </div>
+                    </li>
+                    <li class="scada-panel p-3 md:p-4 flex items-center bg-gray-900">
+                        <div class="w-10 md:w-12 h-10 md:h-12 bg-blue-900/50 rounded flex items-center justify-center border border-blue-500 mr-3 md:mr-4 flex-shrink-0">
+                            <i class="fas fa-project-diagram text-xl md:text-2xl text-blue-400"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-white font-mono text-sm md:text-base">I2C & UART Bus</h4>
+                            <p class="text-[10px] md:text-xs text-gray-400">Inter-ECU Synchronization and Gateway.</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+            
+            <div class="w-full md:w-1/2 scada-panel p-2 border-gray-700 h-[250px] md:h-[400px] flex items-center justify-center bg-[#b8c6bc] relative mt-6 md:mt-0">
+                <div class="absolute top-2 left-2 text-black font-mono text-[8px] md:text-[10px] opacity-50">ISIS Schematic Capture</div>
+                <div class="w-[80%] h-[80%] border-2 border-blue-800 relative">
+                    <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-16 md:w-20 h-16 md:h-20 bg-gray-800 border-2 border-black flex flex-col items-center justify-center text-[6px] md:text-[8px] text-white">
+                        <span>ATMEGA128</span>
+                        <div class="absolute top-2 -left-2 w-2 h-1 bg-gray-400"></div>
+                        <div class="absolute top-4 -left-2 w-2 h-1 bg-gray-400"></div>
+                        <div class="absolute top-6 -left-2 w-2 h-1 bg-gray-400"></div>
+                        <div class="absolute top-2 -right-2 w-2 h-1 bg-gray-400"></div>
+                        <div class="absolute top-4 -right-2 w-2 h-1 bg-gray-400"></div>
+                        <div class="absolute top-6 -right-2 w-2 h-1 bg-gray-400"></div>
+                    </div>
+                    <svg class="w-full h-full absolute top-0 left-0" style="stroke: #000; stroke-width: 1; fill: none;">
+                        <path d="M 0 50 L 100 50 M 200 50 L 300 50 M 150 0 L 150 100 M 150 200 L 150 300"/>
+                    </svg>
+                    <div class="absolute top-[40%] left-[10%] w-6 md:w-8 h-6 md:h-8 rounded-full bg-red-500 border border-black shadow-[inset_0_0_5px_rgba(0,0,0,0.5)] flex items-center justify-center text-[5px] md:text-[6px]">LED</div>
+                    <div class="absolute top-[40%] right-[10%] w-8 md:w-10 h-5 md:h-6 bg-black flex items-center justify-center text-blue-400 text-[4px] md:text-[5px] font-mono text-center">I2C<br>DEBUG</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="slide" id="slide-14">
+        <div class="flex flex-col items-center justify-center h-auto md:h-full text-center pb-20 md:pb-0">
+            <i class="fas fa-check-circle text-5xl md:text-6xl text-green-500 glow-green mb-6 md:mb-8 mt-10 md:mt-0"></i>
+            <h1 class="text-3xl md:text-5xl font-bold mb-6 md:mb-8 text-white uppercase tracking-widest">
+                System <span class="text-green-400">Verified</span>
+            </h1>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-left max-w-2xl mx-auto w-full px-4 md:px-0">
+                <div class="scada-panel p-4 border-l-4 border-cyan-500">
+                    <span class="text-cyan-400 font-bold block mb-1 text-sm md:text-base">Robust Architecture</span>
+                    <span class="text-[10px] md:text-xs text-gray-400 font-mono">Distributed RTOS ECUs ensure zero single-point-of-failure in train control.</span>
+                </div>
+                <div class="scada-panel p-4 border-l-4 border-green-500">
+                    <span class="text-green-400 font-bold block mb-1 text-sm md:text-base">Graceful Degradation</span>
+                    <span class="text-[10px] md:text-xs text-gray-400 font-mono">System handles hardware and comm loss via intelligent fail-safe loops.</span>
+                </div>
+                <div class="scada-panel p-4 border-l-4 border-orange-500">
+                    <span class="text-orange-400 font-bold block mb-1 text-sm md:text-base">Modern Supervision</span>
+                    <span class="text-[10px] md:text-xs text-gray-400 font-mono">Hybrid SCADA UI provides operator clarity without compromising embedded speed.</span>
+                </div>
+                <div class="scada-panel p-4 border-l-4 border-purple-500">
+                    <span class="text-purple-400 font-bold block mb-1 text-sm md:text-base">Scalable Design</span>
+                    <span class="text-[10px] md:text-xs text-gray-400 font-mono">System can scale to N stations and M trains by adding network nodes.</span>
+                </div>
+            </div>
+            
+            <div class="mt-12 md:mt-16 text-cyan-600 font-mono text-[10px] md:text-sm animate-pulse mb-10 md:mb-0">
+                END OF PRESENTATION // SYSTEM STANDBY
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- Presentation Logic ---
+        let currentSlide = 1;
+        
+        function updateUI() {
+            const slides = document.querySelectorAll('.slide');
+            const totalSlides = slides.length;
+
+            slides.forEach((s, idx) => {
+                if (idx + 1 === currentSlide) {
+                    s.classList.add('active');
+                } else {
+                    s.classList.remove('active');
+                }
+            });
+            
+            const counterEl = document.getElementById('slide-counter');
+            const progressEl = document.getElementById('progress-bar');
+            
+            if (counterEl) counterEl.innerText = `${currentSlide} / ${totalSlides}`;
+            if (progressEl) progressEl.style.width = `${(currentSlide / totalSlides) * 100}%`;
+            
+            if (currentSlide === 8) {
+                startScadaSim();
+            } else {
+                stopScadaSim();
+            }
+
+            const controls = document.querySelector('.controls');
+            if(currentSlide === 8) {
+                controls.style.display = 'none';
+            } else {
+                controls.style.display = 'flex';
+            }
+        }
+
+        function nextSlide() {
+            const totalSlides = document.querySelectorAll('.slide').length;
+            if (currentSlide < totalSlides) {
+                currentSlide++;
+                updateUI();
+            }
+        }
+
+        function prevSlide() {
+            if (currentSlide > 1) {
+                currentSlide--;
+                updateUI();
+            }
+        }
+
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowRight' || e.key === 'Space') {
+                nextSlide();
+            } else if (e.key === 'ArrowLeft') {
+                prevSlide();
+            }
+        });
+
+        // --- SCADA Dashboard Simulation Logic (Slide 8) ---
+        let scadaInterval;
+        let scadaSimInterval;
+        
+        function updateScadaClock() {
+            const now = new Date();
+            const clockEl = document.getElementById('scada-clock');
+            if (clockEl) {
+                clockEl.innerText = now.toISOString().substr(11, 8) + " SYS_TIME";
+            }
+        }
+
+        function simulateScadaStats() {
+            try {
+                const cpu = Math.floor(Math.random() * 40) + 10;
+                const ping = Math.floor(Math.random() * 10) + 5;
+                
+                const cpuEl = document.getElementById('scada-cpu');
+                const pingEl = document.getElementById('scada-ping');
+                
+                if (cpuEl) {
+                    cpuEl.innerText = `${cpu}%`;
+                    const cpuBarParent = cpuEl.parentElement;
+                    if (cpuBarParent && cpuBarParent.nextElementSibling) {
+                        const cpuBar = cpuBarParent.nextElementSibling.firstElementChild;
+                        if (cpuBar) cpuBar.style.width = `${cpu}%`;
+                    }
+                }
+                
+                if (pingEl) {
+                    pingEl.innerText = `${ping}ms`;
+                    const pingBarParent = pingEl.parentElement;
+                    if (pingBarParent && pingBarParent.nextElementSibling) {
+                        const pingBar = pingBarParent.nextElementSibling.firstElementChild;
+                        if (pingBar) pingBar.style.width = `${ping * 10}%`;
+                    }
+                }
+            } catch (error) {
+                console.warn("SCADA stats simulation skipped: ", error);
+            }
+        }
+
+        function appendScadaLog(customMsg = null) {
+            const logsBox = document.getElementById('scada-logs');
+            if (!logsBox) return;
+
+            let msg = customMsg;
+            if (!msg) {
+                const logs = [
+                    "> I2C_POLL_ADDR 0x30: OK",
+                    "> SYS_VOLTAGE: 12.1V",
+                    "> HEARTBEAT_ACK ST-05",
+                    "> SIGNAL_UPDATE: GREEN",
+                    "> NET_SYNC_VALID"
+                ];
+                msg = logs[Math.floor(Math.random() * logs.length)];
+            }
+            
+            const div = document.createElement('div');
+            div.className = customMsg ? "text-cyan-300 font-bold" : "text-gray-500 animate-pulse";
+            div.innerText = msg;
+            
+            logsBox.appendChild(div);
+            if (logsBox.children.length > 8) {
+                logsBox.removeChild(logsBox.firstChild);
+            }
+        }
+
+        const FWD_NODES = [
+            {name: 'ST-01', x: 50, y: 120}, {name: 'ST-02', x: 150, y: 120},
+            {name: 'ST-03', x: 250, y: 120}, {name: 'ST-04', x: 350, y: 220},
+            {name: 'ST-05', x: 550, y: 220}, {name: 'ST-06', x: 700, y: 220}
+        ];
+        const RET_NODES = [
+            {name: 'ST-06', x: 700, y: 250}, {name: 'ST-05', x: 550, y: 250},
+            {name: 'ST-04', x: 350, y: 250}, {name: 'ST-03', x: 250, y: 150},
+            {name: 'ST-02', x: 150, y: 150}, {name: 'ST-01', x: 50, y: 150}
+        ];
+
+        let scadaTrains = [
+            { id: 'TR-1', elId: 'tr-1', type: 'FWD', path: FWD_NODES, targetIdx: 1, progress: 0.1, state: 'MOVING', timer: 0, speed: 0.012, color: 'text-cyan-400', baseColor: '#00f0ff', bgColor: 'bg-cyan-900', borderColor: 'border-cyan-400' },
+            { id: 'TR-2', elId: 'tr-2', type: 'FWD', path: FWD_NODES, targetIdx: 4, progress: 0.8, state: 'MOVING', timer: 0, speed: 0.009, color: 'text-cyan-400', baseColor: '#00f0ff', bgColor: 'bg-cyan-900', borderColor: 'border-cyan-400' },
+            { id: 'TR-3', elId: 'tr-3', type: 'RET', path: RET_NODES, targetIdx: 2, progress: 0.3, state: 'MOVING', timer: 0, speed: 0.010, color: 'text-orange-400', baseColor: '#ffaa00', bgColor: 'bg-orange-900', borderColor: 'border-orange-400' },
+            { id: 'TR-4', elId: 'tr-4', type: 'RET', path: RET_NODES, targetIdx: 5, progress: 0.9, state: 'MOVING', timer: 0, speed: 0.008, color: 'text-orange-400', baseColor: '#ffaa00', bgColor: 'bg-orange-900', borderColor: 'border-orange-400' }
+        ];
+
+        function updateTrainSimulation() {
+            scadaTrains.forEach(t => {
+                const el = document.getElementById(t.elId);
+                if (!el) return;
+
+                let prevState = t.state;
+
+                if (t.state === 'MOVING') {
+                    t.progress += t.speed;
+                    if (t.progress >= 1) {
+                        t.progress = 1;
+                        t.state = 'ARRIVED';
+                        t.timer = 15; 
+                    }
+                } else if (t.state === 'ARRIVED') {
+                    t.timer--;
+                    if (t.timer <= 0) {
+                        t.state = 'DOORS_OPEN';
+                        t.timer = 40; 
+                    }
+                } else if (t.state === 'DOORS_OPEN') {
+                    t.timer--;
+                    if (t.timer <= 0) {
+                        t.state = 'DOORS_CLOSED';
+                        t.timer = 20; 
+                    }
+                } else if (t.state === 'DOORS_CLOSED') {
+                    t.timer--;
+                    if (t.timer <= 0) {
+                        t.targetIdx++;
+                        
+                        if (t.targetIdx >= t.path.length) {
+                            if (t.type === 'FWD') {
+                                t.type = 'RET';
+                                t.path = RET_NODES;
+                                t.color = 'text-orange-400';
+                                t.baseColor = '#ffaa00';
+                                el.classList.remove('bg-cyan-900', 'border-cyan-400');
+                                el.classList.add('bg-orange-900', 'border-orange-400');
+                                el.querySelector('span').classList.remove('text-cyan-100');
+                                el.querySelector('span').classList.add('text-orange-100');
+                            } else {
+                                t.type = 'FWD';
+                                t.path = FWD_NODES;
+                                t.color = 'text-cyan-400';
+                                t.baseColor = '#00f0ff';
+                                el.classList.remove('bg-orange-900', 'border-orange-400');
+                                el.classList.add('bg-cyan-900', 'border-cyan-400');
+                                el.querySelector('span').classList.remove('text-orange-100');
+                                el.querySelector('span').classList.add('text-cyan-100');
+                            }
+                            t.targetIdx = 1;
+                        }
+                        t.progress = 0;
+                        t.state = 'MOVING';
+                    }
+                }
+
+                let prevNode = t.path[t.targetIdx - 1];
+                let nextNode = t.path[t.targetIdx];
+                
+                const cx = prevNode.x + (nextNode.x - prevNode.x) * t.progress;
+                const cy = prevNode.y + (nextNode.y - prevNode.y) * t.progress;
+                
+                el.style.left = `${cx}px`;
+                el.style.top = `${cy}px`;
+
+                if (t.state === 'DOORS_OPEN') {
+                    el.style.borderColor = '#39ff14'; 
+                    el.style.boxShadow = '0 0 15px rgba(57, 255, 20, 0.6)';
+                } else if (t.state === 'DOORS_CLOSED' || t.state === 'ARRIVED') {
+                    el.style.borderColor = '#ff003c'; 
+                    el.style.boxShadow = '0 0 10px rgba(255, 0, 60, 0.6)';
+                } else {
+                    el.style.borderColor = t.baseColor;
+                    const r = parseInt(t.baseColor.slice(1, 3), 16);
+                    const g = parseInt(t.baseColor.slice(3, 5), 16);
+                    const b = parseInt(t.baseColor.slice(5, 7), 16);
+                    el.style.boxShadow = `0 0 10px rgba(${r}, ${g}, ${b}, 0.4)`;
+                }
+
+                const statusRow = document.getElementById(`status-${t.id}`);
+                if (statusRow) {
+                    let statusText = ''; let statusColor = ''; let descText = '';
+
+                    if (t.state === 'MOVING') {
+                        statusText = 'MOVING'; statusColor = 'text-cyan-400';
+                        descText = `> ${nextNode.name}`;
+                    } else if (t.state === 'ARRIVED' || t.state === 'DOORS_CLOSED') {
+                        statusText = 'STOPPED'; statusColor = 'text-red-400';
+                        descText = `@ ${nextNode.name}`;
+                    } else if (t.state === 'DOORS_OPEN') {
+                        statusText = 'BOARDING'; statusColor = 'text-green-400';
+                        descText = `@ ${nextNode.name}`;
+                    }
+
+                    statusRow.innerHTML = `
+                        <span class="font-bold text-[10px] ${t.color}">${t.id}</span>
+                        <span class="text-[9px] ${statusColor} font-bold tracking-wider w-16 text-center">[${statusText}]</span>
+                        <span class="text-gray-400 text-[10px] w-12 text-right">${descText}</span>
+                    `;
+                }
+
+                if (prevState !== t.state) {
+                    if (t.state === 'ARRIVED') appendScadaLog(`> ${t.id} ARRIVED AT ${nextNode.name}`);
+                    if (t.state === 'DOORS_OPEN') appendScadaLog(`> ${t.id} DOORS OPEN @ ${nextNode.name}`);
+                    if (t.state === 'MOVING') appendScadaLog(`> ${t.id} DEP TO ${nextNode.name}`);
+                }
+            });
+        }
+
+        function startScadaSim() {
+            if (!scadaInterval) {
+                updateScadaClock();
+                scadaInterval = setInterval(() => {
+                    updateScadaClock();
+                    simulateScadaStats();
+                    if(Math.random() > 0.7) appendScadaLog();
+                }, 1000);
+            }
+            if (!scadaSimInterval) {
+                scadaSimInterval = setInterval(updateTrainSimulation, 50); 
+            }
+        }
+
+        function stopScadaSim() {
+            if (scadaInterval) {
+                clearInterval(scadaInterval);
+                scadaInterval = null;
+            }
+            if (scadaSimInterval) {
+                clearInterval(scadaSimInterval);
+                scadaSimInterval = null;
+            }
+        }
+
         updateUI();
 
     </script>
